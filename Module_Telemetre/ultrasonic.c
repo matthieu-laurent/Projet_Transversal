@@ -10,8 +10,8 @@
 #define ULTRASON_TMAX  1*ULTRASON_COEF*ULTRASON_DMAX	// durée maximale mesurée pour laquelle la mesure est correcte (400 cm)
 
 sfr16 DPTR=0x82;
-sbit trig=P2^0; // P2.0 en d:0xa0
-sbit INT0=P2^1; // crossbar à faire avec wizard
+sbit trig=P3^4; // P2.0 en d:0xa0
+sbit INT0=P3^5; // crossbar à faire avec wizard
 // **** fin ultrason.h **************************
 
 /*
@@ -26,9 +26,13 @@ EX0 = 1;
 */
 void envoi_pulsation(void) //fonction permettant de générer un delai de 10us pour declencher le trigger
 {
+	int i;
 	trig=1;
-	_nop_(); //1
-	_nop_(); //2
+	for(i=0;i<223;i++)
+	{
+		_nop_(); //1
+	}
+	/*_nop_(); //2
 	_nop_(); //3
 	_nop_(); //4
 	_nop_(); //5
@@ -36,7 +40,7 @@ void envoi_pulsation(void) //fonction permettant de générer un delai de 10us p
 	_nop_(); //7
 	_nop_(); //8
 	_nop_(); //9
-	_nop_(); //10
+	_nop_(); //10*/
 	trig=0;
 }
 
@@ -88,7 +92,7 @@ void main()
 	unsigned short distance_cible=0;
 	
 	Init_Device();
-	
+							// Calcul distance incorrect ********************* revoir timer
 	// Init Timer 0
 	TMOD|=0x09; // timer0 en mode 2 (16bit Counter/timer)
 	TMOD&=0xF9; // timer0 en mode 2 (16bit Counter/timer)
@@ -101,6 +105,6 @@ void main()
 	{
 		distance_cible=calcul_distance();
 		printf("%d\n", distance_cible);
-		delay(20000);
+		delay(10000); // délai correct, ne pas mettre plus. Chercher en quoi ce délai perturbe le test.
 	}
 }
