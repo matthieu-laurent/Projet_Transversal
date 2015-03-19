@@ -3,4 +3,5 @@
 #include <c8051f020.h>
 #endif
 
-void PCA_Init();
+void PCA_Init(void);
+void PCA_ISR(void);
