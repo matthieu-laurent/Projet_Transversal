@@ -43,8 +43,9 @@ void gestion_puissance(void)
 
 void gestion_brocheIO(void)
 {
-		P1MDOUT   = 0x1C;// Push-Pull pour 
+		P1MDOUT   = 0x1C;// Push-Pull pour P1
 	  // Activation du crossbar pour PCA module 0, 1 et 2 avec tous ceux d'avant (cf wizard)
 		XBR0      = 0x1F;
     XBR2      = 0x44; // PCA module0=P1^2 | module1=P1^3 | module2=P1^4
+	
 }
