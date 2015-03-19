@@ -17,6 +17,7 @@
 #endif				// Configuration globales du µprocesseur
 #include <init_pca.h>
 
+sbit P14=P1^4;
 //------------------------------------------------------------------------------------
 // Global CONSTANTS
 //------------------------------------------------------------------------------------
@@ -28,6 +29,7 @@
 // MAIN Routine
 //------------------------------------------------------------------------------------
 void main (void) {
+	int i=0;	
 	Init_Device();
 	PCA_Init();
 	EA=1; // Autorisation interruptions
@@ -35,5 +37,6 @@ void main (void) {
 
 
 	while (1) { // Boucle infinie
+		
 	}
 }
