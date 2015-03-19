@@ -17,3 +17,11 @@ char Send_String(char *char_ptr);
 char Getchar();
 
 void Demo_UART();
+
+void Analyse_String(char* str);
+
+int calculVitesse(char *str);
+
+int calculAngle(char *str);
+
+char* calculCoord(char* str, char c);
