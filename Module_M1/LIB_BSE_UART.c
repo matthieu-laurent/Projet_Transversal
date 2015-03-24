@@ -157,6 +157,7 @@ void Analyse_String(char str[])
 	int coordX = 0;
 	int coordY = 0;
 	bool sortie = false;
+	int cmp;
 	
 	while(*p != '\r' && sortie == false)
 	{
@@ -258,9 +259,43 @@ void Analyse_String(char str[])
 					}
 				}
 				else if(*p == 'S')
-				{
-					// ASS à coder
-				}
+        {  
+					int a = 0;
+					p++;
+          if(*p == 'S')
+          {
+						p++;
+            if(*p == '\r') // Pas de paramètre
+            {                 
+							out.ACQ_Duree = 0;
+              out.Etat_ACQ_Son = ACQ_non;
+              sortie = true;
+            }
+            if(*p != '\r')
+            {
+							char tab[4];
+							p++;
+              while(*p >= '0' && *p <= '9' && *p != '\0' && a<3)
+              {
+                tab[a] = *p;
+                a++;
+                p++;
+              }
+              tab[a]='\0';                               
+              if(atoi(tab) >= 1 && atoi(tab) <= 99)
+              {
+                out.ACQ_Duree = atoi(tab);
+                out.Etat_ACQ_Son =ACQ_oui;
+                sortie = true;
+              }
+							else
+							{
+								out.Etat_ACQ_Son =ACQ_non;
+                sortie = true;
+							}
+            }
+          }
+        }
 				break; // fin case A
 				
 			case 'B':
@@ -467,6 +502,92 @@ void Analyse_String(char str[])
 						sortie = true;
 					}
 				break; // fin case G
+					
+			case 'M':    
+				
+				p++;
+        if(*p == 'O')
+        {
+          p++;
+          if(*p == 'B')
+          //TRAITEMENT DU PARAMETRE D    
+          { 
+						p++;
+            if(*p == '\r')//pas de parametres
+            {
+              out.Etat_DCT_Obst = oui_360;
+              cmp=1;
+            }
+            else//presence espace ou caractere
+            {
+							int a = 0;
+							char tab[5];
+              if(*p == ' ')//si espace
+              {
+								p++;
+							}
+              while(*p >= '0' && *p <= '9' && *p != '\0' && a<3)    
+              {
+								tab[a] = *p;
+                a++;
+                p++;
+              }
+              tab[a]='\0';
+              if(atoi(tab) == 180 )
+              {
+                out.Etat_DCT_Obst = oui_180;
+                cmp=1;
+              }
+              else
+              {
+								out.Etat_DCT_Obst = oui_360;
+                cmp=1;
+              }
+              p++;
+              if(*p == ' ')//si espace
+              {
+								p++;
+							}
+              //TRAITEMENT DU PARAMETRE A:
+              if(*p =='A')
+              {    
+								p++;
+                if(*p == '\r')//pas de parametres
+                {
+										out.DCT_Obst_Resolution =30;
+										cmp++;
+								}	
+                if(*p ==':')
+                {  
+									p++;
+                  a=0;
+                  while(*p >= '0' && *p <= '9' && *p != '\0' && a<2)    
+                  {
+										tab[a] = *p;
+                    a++;
+                    p++;
+                  }
+                  tab[a]='\0';
+                  if(atoi(tab) >= 5 && atoi(tab) <= 45 )
+                  {
+										out.DCT_Obst_Resolution = atoi(tab);
+                    cmp++;
+                  }
+                  else
+                  {
+                    out.DCT_Obst_Resolution =30;
+										cmp++;
+                  }
+                  if(cmp == 2)
+                  {
+										sortie = true;
+                  }
+                }        
+							}  
+						}
+					}
+				}
+				break;
 			} // fin switch
 	} // while
 } // fin fonction
