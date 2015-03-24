@@ -1,6 +1,6 @@
 
-typedef unsigned char BYTE;
-typedef char SIGNED_BYTE;
+//typedef unsigned char BYTE;
+//typedef char SIGNED_BYTE;
 
 ///*****************************************************************************************************************************************
 // Structure de donn?es pour les commandes transmises par la centrale ce commande
@@ -38,7 +38,7 @@ typedef struct COMMANDES       // Cette structure contient toutes les commandes 
    
    enum  Lumiere Etat_Lumiere;    // Contient la commande d'allumage du pointeur lumineux "L" "LS"
                                   // Param?tres de la commande pr?c?dente:     
-   BYTE  Lumiere_Intensit?;          // Param?tre intensit? lumineuse 							  
+   BYTE  Lumiere_Intensite;          // Param?tre intensit? lumineuse 							  
    BYTE  Lumiere_Duree;              // Param?tre dur?e d'allumage
    BYTE  Lumire_Extinction;          // Param?tre dur?e d'extinction
    BYTE  Lumiere_Nbre;               // Param?tre nombre de cycles d'allumage/extinction
