@@ -16,6 +16,10 @@
 #include <stdlib.h>     // atoi 
 #include <stdio.h>   // printf
 
+typedef int bool;
+#define true 1
+#define false 0
+
 void CFG_Clock_UART0()
 {
 	CKCON |= 0x10; // T1M : Timer 1 Clock Select
@@ -145,167 +149,201 @@ void Demo_UART()
 	
 }
 
-void Analyse_String(char* str)
+void Analyse_String(char str[])
 {
-	char *p = str;
+	char* p = str;
 	int vitesse = 0;
 	int angle = 0;
 	int coordX = 0;
 	int coordY = 0;
+	bool sortie = false;
 	
-	while(*p != '\r')
+	while(*p != '\r' && sortie == false)
 	{
 		switch (*p)
 		{
 			case 'D':
 				p++;
-				p++;
+				if(*p != '\r') p++;
 				switch (*p)
 				{
 					case '1':
 						out.Etat_Epreuve = epreuve1;
-						p++;
+						sortie = true;
 						break;
 					case '2':
 						out.Etat_Epreuve = epreuve2;
-						p++;
+						sortie = true;
 						break;
 					case '3':
 						out.Etat_Epreuve = epreuve3;
-						p++;
+						sortie = true;
 						break;
 					case '4':
 						out.Etat_Epreuve = epreuve4;
-						p++;
+						sortie = true;
 						break;
 					case '5':
 						out.Etat_Epreuve = epreuve5;
-						p++;
+						sortie = true;
 						break;
 					case '6':
 						out.Etat_Epreuve = epreuve6;
-						p++;
+						sortie = true;
 						break;
 					case '8':
 						out.Etat_Epreuve = epreuve8;
-						p++;
+						sortie = true;
 						break;
 					default:
 						out.Etat_Epreuve = epreuve1;
-						p++;
+						sortie = true;
 						break;
-				}
-				break;
+				} // fin switch
+				break; // fin case D
 			case 'E' :
 				out.Etat_Epreuve = Fin_Epreuve;
+				sortie = true;
 				break;
 			case 'Q' :
 				out.Etat_Epreuve = Stop_Urgence;
+				sortie = true;
 				break;
 			case 'T' :
 				p++;
 				if(*p == 'V')
 				{
 					p++;
-					vitesse = calculVitesse(p);
+					p++;
+					vitesse = (unsigned char) calculVitesse(p);
 					if(vitesse != 0)
 					{
 						out.Vitesse = vitesse;
+						sortie = true;
 					}
 					else
 					{
 						out.Vitesse = 0;
-						break;
+						sortie = true;
 					}
 				}
 				else
 				{
-					break;
+					sortie = true;
 				}
+				break; // fin case T
 			case 'A':
-				p++;
+				if(*p != '\r') p++;
 				if(*p == '\r') // Pas de paramètre
 				{
-					out.Vitesse = 20;
+					sortie = true;
 					out.Etat_Mouvement = Avancer;
+					out.Vitesse = 20;
 				}
-				
-				if(*p != 'S')
+				else if(*p != 'S')
 				{
-					
+					p++;
 					vitesse = calculVitesse(p);
 					if(vitesse != 0)
 					{
 						out.Vitesse = vitesse;
 						out.Etat_Mouvement = Avancer;
+						sortie = true;
 					}
 					else
 					{
 						out.Etat_Mouvement = Mouvement_non;
+						out.Vitesse = 0;
+						sortie = true;
 					}
-					break;
 				}
-				if(*p == 'S')
-					// ASS
-				break;
+				else if(*p == 'S')
+				{
+					// ASS à coder
+				}
+				break; // fin case A
 				
 			case 'B':
-				p++;
+				if(*p != '\r') p++;
 				if(*p == '\r') // Pas de paramètre
 				{
 					out.Vitesse = 20;
 					out.Etat_Mouvement = Reculer;
-				}
-				
-				vitesse = calculVitesse(p);
-				if(vitesse != 0)
-				{
-					out.Vitesse = vitesse;
-					out.Etat_Mouvement = Reculer;
+					sortie = true;
 				}
 				else
 				{
-					out.Etat_Mouvement = Mouvement_non;
+					p++;
+					vitesse = calculVitesse(p);
+					if(vitesse != 0)
+					{
+						out.Vitesse = vitesse;
+						out.Etat_Mouvement = Reculer;
+						sortie = true;
+					}
+					else
+					{
+						out.Etat_Mouvement = Mouvement_non;
+						out.Vitesse = 0;
+						sortie = true;
+					}
 				}
-				break;
+				break; // fin case B
 			
 			case 'S':
-				p++;
+				if(*p != '\r') p++;
 				if(*p == '\r')
 				{
 					out.Etat_Mouvement = Stopper;
+					sortie = true;
 				}
+				break;
 			case 'R':
 				p++;
 				if(*p == 'D') // Rotation à droite de 90°
 				{
 					p++;
 					if(*p == '\r')
+					{
 						out.Etat_Mouvement = Rot_90D;
+						sortie = true;
+					}
 				}
 				else if(*p == 'G') // Rotation à gauche de 90°
 				{
 					p++;
 					if(*p == '\r')
+					{
 						out.Etat_Mouvement = Rot_90G;
+						sortie = true;
+					}
 				}
 				else if (*p == 'C') // Rotation complète de la base de 180°
 				{
-					p++;
+					if(*p != '\r') p++;
 					if(*p == '\r')
+					{
 						out.Etat_Mouvement = Rot_180D;
+						sortie = true;
+					}
 					else
 					{
 						p++;
-						if(*p == 'D')
-							out.Etat_Mouvement = Rot_180D;
-						else if(*p == 'G')
+						if(*p == 'G')
+						{
 							out.Etat_Mouvement = Rot_180G;
+							sortie = true;
+						}
+						else
+						{
+							out.Etat_Mouvement = Rot_180D;
+							sortie = true;
+						}
 					}
 				}
 				else if (*p == 'A')
 				{
-					p++;
+					if(*p != '\r') p++;
 					if(*p == ' ')
 					{
 						p++;
@@ -316,10 +354,16 @@ void Analyse_String(char* str)
 							{
 								p++;
 								angle = calculAngle(p);
-								if(angle >= 0 && angle <= 180)
+								if(angle > 0 && angle <= 180)
 								{
 									out.Angle = angle;
 									out.Etat_Mouvement = Rot_AngD;
+									sortie = true;
+								}
+								else
+								{
+									out.Etat_Mouvement = Rot_90D;
+									sortie = true;
 								}
 							}
 						}
@@ -330,31 +374,44 @@ void Analyse_String(char* str)
 							{
 								p++;
 								angle = calculAngle(p);
-								if(angle >= 0 && angle <= 180)
+								if(angle > 0 && angle <= 180)
 								{
 									out.Angle = angle;
 									out.Etat_Mouvement = RotAngG;
+									sortie = true;
 								}
+								else
+								{
+									out.Etat_Mouvement = Rot_90D;
+									sortie = true;
+								}
+							}
+							else
+							{
+								out.Etat_Mouvement = Rot_90D;
+								sortie = true;
 							}
 						}
 						else
 						{
 							out.Etat_Mouvement = Mouvement_non;
+							sortie = true;
 						}
 						
 					}
 					else if (*p == '\r') // Pas de paramètres donc cas par défaut
 					{
 						out.Etat_Mouvement = Rot_90D;
+						sortie = true;
 					}
-					break;
 				}
-				break;
+				break; // fin case R
 				
 			case 'G':
 				p++;
 				if(*p == ' ')
 				{
+					p++;
 					if(*p == 'X')
 					{
 						p++;
@@ -362,8 +419,14 @@ void Analyse_String(char* str)
 						{
 							p++;
 							p = calculCoord(p,'X');
+							sortie = true;
 						}
 						p++;
+					}
+					else
+					{
+						out.Etat_Mouvement = Mouvement_non;
+						sortie = true;
 					}
 					if(*p == 'Y')
 					{
@@ -372,8 +435,14 @@ void Analyse_String(char* str)
 						{
 							p++;
 							p = calculCoord(p,'Y');
+							sortie = true;
 						}
 						p++;
+					}
+					else
+					{
+						out.Etat_Mouvement = Mouvement_non;
+						sortie = true;
 					}
 					if(*p == 'A')
 					{
@@ -382,10 +451,22 @@ void Analyse_String(char* str)
 						{
 							p++;
 							out.Angle = calculAngle(p);
+							out.Etat_Mouvement = Mouvement_non;
+							sortie = true;
 						}
 					}
-				} // fin case G
-				break;
+					else
+					{
+						out.Etat_Mouvement = Mouvement_non;
+						sortie = true;
+					}
+				}
+				else
+					{
+						out.Etat_Mouvement = Mouvement_non;
+						sortie = true;
+					}
+				break; // fin case G
 			} // fin switch
 	} // while
 } // fin fonction
@@ -442,6 +523,7 @@ char* calculCoord(char* str, char c)
 	char coord[4];
 	
 	int i = 0;
+	int t = 0;
 	
 	while((*p >='0' && *p <='9') || *p == '-')
 	{
@@ -451,10 +533,16 @@ char* calculCoord(char* str, char c)
 	}
 	coord[i] = '\0';
 	
+	
+  t	= atoi(coord);
+	t = 256 + t;
+	
 	if(c == 'X')
 	{
-		if(atoi(coord) >= - 99 && atoi(coord) <= 99)
+		if(atoi(coord) >= 0 && atoi(coord) <= 99)
 			out.Coord_X = atoi(coord);
+		else if(atoi(coord) >= -99 && atoi(coord) <0)
+			out.Coord_X = atoi(coord) + 256;
 		else
 			out.Coord_X = 0;
 	}
@@ -462,6 +550,8 @@ char* calculCoord(char* str, char c)
 	{
 		if(atoi(coord) >= - 99 && atoi(coord) <= 99)
 			out.Coord_Y = atoi(coord);
+		else if(atoi(coord) >= -99 && atoi(coord) <0)
+			out.Coord_Y = atoi(coord) + 256;
 		else
 			out.Coord_Y = 0;
 	}
