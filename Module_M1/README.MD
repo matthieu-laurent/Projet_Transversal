@@ -26,3 +26,7 @@ RA : sans paramètre ou mauvais paramètre -> 90° à droite
 
 G : sans paramètre ou mauvais paramètre -> pas de mvt
     si chiffre négatif : -1 <=> 255 ; -2 <=> 254 ; ... ; -50 <=> 206 ; ... ; -99 <=> 207 (reçu en hexadécimal /!\ )
+
+ASS : à détailler
+
+MOB : à détailler
