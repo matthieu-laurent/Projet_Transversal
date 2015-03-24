@@ -12,6 +12,31 @@
 #define BAUDRATE 9600
 
 //*****************************************************************************************************************************************
+// Fonction d'initialisation
+//*****************************************************************************************************************************************
+
+void Reset_Sources_Init()
+{
+WDTCN = 0xDE; // Désactive le timer du watchdog
+WDTCN = 0xAD;
+}
+void Oscillator_Init()
+{
+int i = 0; // Compteur délai
+OSCXCN = 0x67; // Démarrage oscillateur externe avec crystal à 22,1184 Mhz
+for (i = 0; i < 3000; i++); // Wait 1ms for initialization
+while ((OSCXCN & 0x80) == 0); // Attente de la mise en place de l'oscillateur crystal
+OSCICN = 0x0C; // Sélection de l'oscillateur externe comme source pour SYSCLK et activation du détecteur de clock manquante
+}
+// Initialization function for device,
+// Call Init_Device() from your main program
+void Init_Device(void)
+{
+Reset_Sources_Init(); // Désactivation du watchdog
+Oscillator_Init(); // SYSCLOCK = 22,1184 Mhz
+}
+
+//*****************************************************************************************************************************************
 // Fonction du Serializer
 //*****************************************************************************************************************************************
 
