@@ -1,5 +1,5 @@
-typedef unsigned char BYTE;
-typedef char SIGNED_BYTE;
+//typedef unsigned char BYTE;
+//typedef char SIGNED_BYTE;
 
 //*****************************************************************************************************************************************
 // Structure de donn?es pour les commandes ? envoyer ? la carte Serializer
