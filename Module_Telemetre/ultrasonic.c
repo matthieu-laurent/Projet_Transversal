@@ -56,7 +56,7 @@ unsigned int MES_Dist_AV(void)
 *********************************************************************		*/
 	
 	unsigned int distance;
-	unsigned int a;	// **********************!!!!!!!!!!!!!!!!! CHANGER TYPE mettre sur 32 bits! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	unsigned long int a;	// **********************!!!!!!!!!!!!!!!!! CHANGER TYPE mettre sur 32 bits! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//unsigned int usmax = ULTRASON_TMAX; tester sans usmax d'abord
 	
 	nb_debordement = 0;
@@ -115,6 +115,7 @@ void main()
 {
 	unsigned int distance_cible=0;
 	
+	trig = 0;
 	Init_Device();
 	
 	// Init Timer 0
