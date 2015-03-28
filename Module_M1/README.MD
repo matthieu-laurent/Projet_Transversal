@@ -27,6 +27,6 @@ RA : sans paramètre ou mauvais paramètre -> 90° à droite
 G : sans paramètre ou mauvais paramètre -> pas de mvt
     si chiffre négatif : -1 <=> 255 ; -2 <=> 254 ; ... ; -50 <=> 206 ; ... ; -99 <=> 207 (reçu en hexadécimal /!\ )
 
-ASS : à détailler
+ASS : sans paramètre ou mauvais paramètre -> Etat_ACQ_Son = ACQ_non et ACQ_Duree = 0
 
-MOB : à détailler
+MOB : sans paramètre -> Etat_DCT_Obst = oui_360
