@@ -9,7 +9,7 @@
 #include <FO_M2__Structures_COMMANDES_INFORMATIONS_Serializer.h>
 
 #define SYSCLK 22118400
-#define BAUDRATE 9600
+#define BAUDRATE 19200
 
 //*****************************************************************************************************************************************
 // Fonction d'initialisation
@@ -108,45 +108,49 @@ void CFG_Clock_UART1(void)
 	CKCON|=0x10; // timer1 clock select
 	TMOD|=0x20; // l'horloge du timer 1 est sysclock
 	TMOD&=0x2F; // le timer 1 est configuré en timer 8 bits avec autoreload
-	TH1= -(SYSCLK/BAUDRATE/16);
-	TL1= 0xff;
+  TCON      = 0x40;
+  TH1       = 0xB8;
+	TL1= 0x00;
 	ET1=0; // désactive les interruptions du timer 1
 	TR1=1;//Demarrer le Timer1	
 	TF1=0;//flag du Timer1 remis à 0
+	
 // On démarre le timer 1 à FFh ainsi un coup de clock après avoir démarrer, 
 // le timer se précharge avec la valeur de TH1
+	
 }
 
 void CFG_UART1(void)
 {
+	P0MDOUT   = 0x21;
+  XBR2      = 0x44;//UART1 transmet en P00 reçoit en P01
 	RCLK0=0; // horloges de réception de l'UART0 = Timer 1
 	TCLK0=0; // horloges de transmission de l'UART0 = Timer 1
-	PCON |=0x80; // SMOD0=1 : UART0 baud rate devided by two disabled
-	PCON &= 0xBF; // SSTAT0=0
-	SCON1 =0x72; // Mode1 : 8-Bit UART, Variable Baud Rate,
+	//PCON |=0x80; // SMOD0=1 : UART0 baud rate devided by two disabled
+	//PCON &= 0xBF; // SSTAT0=0
+	PCON = 0x10;
+	SCON1 =0x50; // Mode1 : 8-Bit UART, Variable Baud Rate,
 		     //RI0 will only be activated if stop bit is logic level 1,
 		    //UART0 reception enabled
-	SCON1=SCON1|0x02;//TI1=1;
+	SCON1|=0x02;//TI1=1;
+	EIE2|=0x40;
+	EA=1;
 }
+
+bit FLAG_ECRITURE=1;
 
 char Putchar(char c, char csg_tempo)
 {
-	int i;
-	while(csg_tempo!=0)
-	{
-		if((SCON1&0x02)==0x00){
-			for(i=0; i<440;i++){}//temporisation de 20µs
-	        csg_tempo--;
-			if(csg_tempo==0) return 0;
-			}	
-		else{
-	        SBUF1=c; // Envoi du caractère c dans le registre de données de l'UART
-        	SCON1=SCON1|0x02; // Remise à zéro du drapeau
-        	return c;
-			}
-	}	
-	return 0;
-	
+	while(!FLAG_ECRITURE);
+	SBUF1=c; // Envoi du caractère c dans le registre de données de l'UART
+	FLAG_ECRITURE=0;
+	return c;	
+}
+
+void ISR_UART1(void) interrupt 20
+{
+	SCON1&=0xFD;
+  FLAG_ECRITURE=1;
 }
 
 char Send_String(char *char_ptr)
@@ -181,42 +185,43 @@ void Action_UART1()
 		{
 			case mogo_1_2 : 
 				Send_String("mogo 1:");
-				Putchar(S_INPUTS.Vitesse_Mot1,10);
+				Putchar('0'+S_INPUTS.Vitesse_Mot1,10);
 				Send_String(" 2:");
-				Putchar(S_INPUTS.Vitesse_Mot2,10);
-				Send_String(" <CR>");
+				Putchar('0'+S_INPUTS.Vitesse_Mot2,10);
+				Putchar('\r',10);
 			break;
 			
 			case digo_1 :  
 				Send_String("digo 1:");
-				Putchar(S_INPUTS.Ticks_mot1,10);
+				Putchar('0'+S_INPUTS.Ticks_mot1,10);
 				Send_String(":");
-				Putchar(S_INPUTS.Vitesse_Mot1,10);
-				Send_String(" <CR>");
+				Putchar('0'+S_INPUTS.Vitesse_Mot1,10);
+				Putchar('\r',10);
 			break;
 			
 			case digo_2 :  
 				Send_String("digo 2:");
-				Putchar(S_INPUTS.Ticks_mot2,10);
+				Putchar('0'+S_INPUTS.Ticks_mot2,10);
 				Send_String(":");
-				Putchar(S_INPUTS.Vitesse_Mot2,10);
-				Send_String(" <CR>");
+				Putchar('0'+S_INPUTS.Vitesse_Mot2,10);
+				Putchar('\r',10);
 			break;
 			
 			case digo_1_2 :  
 				Send_String("digo 1:");
-				Putchar(S_INPUTS.Ticks_mot1,10);
+				Putchar('0'+S_INPUTS.Ticks_mot1,10);
 				Send_String(":");
 				Putchar(S_INPUTS.Vitesse_Mot1,10);
 				Send_String(" 2:");
-				Putchar(S_INPUTS.Ticks_mot2,10);
+				Putchar('0'+S_INPUTS.Ticks_mot2,10);
 				Send_String(":");
-				Putchar(S_INPUTS.Vitesse_Mot2,10);
-				Send_String(" <CR>");
+				Putchar('0'+S_INPUTS.Vitesse_Mot2,10);
+				Putchar('\r',10);
 			break;
 			
 			case Stop :
-				Send_String("stop <CR>");
+				Send_String("stop");
+				Putchar('\r',10);
 			break;	
 		}
 		S_INPUTS.Etat_Commande=Commande_non;
