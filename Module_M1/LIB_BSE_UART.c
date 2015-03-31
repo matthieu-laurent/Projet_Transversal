@@ -15,6 +15,7 @@
 #include "FO_M1__Structures_COMMANDES_INFORMATIONS_CentraleDeCommande.h"
 #include <stdlib.h>     // atoi 
 #include <stdio.h>   // printf
+#include <string.h>
 
 typedef int bool;
 #define true 1
@@ -873,4 +874,31 @@ void calculNombre(char* p)
 	{
 		CMD_C.Lumiere_Nbre = 1;
 	}
+}
+
+char* Invite_Commandes() //message signalant que le robot est pret
+{
+      return "I le robot est pret\r";
+}
+
+char* Arrivee_point()//message signalant que le robot est arrivée au pointspécifie
+{
+      return "Arrivee au point specifie\r";
+}
+
+char* Servomoteur_positionne(char* b)//message signalant que le servomoteur a atteint sa position de consigne
+{
+   return strcat("AS ",b);
+}
+
+char* Detection_obstacle(int angle,int distance)
+{
+  char xdata chaine[15];
+	sprintf(chaine,"KOB %d: %d\r",angle,distance);
+  return chaine;
+}
+
+char* Info_auxilliaire(char* a)//information Info_auxilliaire
+{
+    return strcat("IA ",a);
 }
