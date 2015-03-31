@@ -27,6 +27,12 @@ RA : sans paramètre ou mauvais paramètre -> 90° à droite
 G : sans paramètre ou mauvais paramètre -> pas de mvt
     si chiffre négatif : -1 <=> 255 ; -2 <=> 254 ; ... ; -50 <=> 206 ; ... ; -99 <=> 207 (reçu en hexadécimal /!\ )
 
-ASS : à détailler
+ASS : sans paramètre ou mauvais paramètre -> Etat_ACQ_Son =ACQ_non 
 
-MOB : à détailler
+MOB : sans paramètre ou mauvais paramètre -> Détection sur 360° avec résolution angulaire de 30°
+
+L : sans paramètre ou mauvais paramètre -> Allumage avec I = 100% ; D = 99 ; E = 0 ; N = 1
+
+LS
+
+CS : sans paramètre ou mauvais paramètre -> ne fait rien
