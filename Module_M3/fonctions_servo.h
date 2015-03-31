@@ -4,4 +4,4 @@
 #endif
 
 unsigned char CDE_Servo_V (char Angle);
-unsigned char CDE_Servo_H (char Angle);
+//unsigned char CDE_Servo_H (char Angle);
