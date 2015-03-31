@@ -48,4 +48,8 @@ char* Detection_obstacle(int angle,int distance);
 
 char* Info_auxilliaire(char* a);
 
+char* Accuse_Reception_OK();
+
+char* Accuse_Reception_KO();
+
 #endif
