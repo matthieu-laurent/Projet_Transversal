@@ -902,3 +902,13 @@ char* Info_auxilliaire(char* a)//information Info_auxilliaire
 {
     return strcat("IA ",a);
 }
+
+char* Accuse_Reception_OK()
+{
+	return "\r\n>";
+}
+
+char* Accuse_Reception_KO()
+{
+	return "\r\n#";
+}
