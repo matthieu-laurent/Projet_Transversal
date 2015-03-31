@@ -151,13 +151,13 @@ void Demo_UART()
 
 void Analyse_String(char str[])
 {
-	char* p = str;
-	int vitesse = 0;
-	int angle = 0;
-	int coordX = 0;
-	int coordY = 0;
-	bool sortie = false;
-	int cmp;
+	char* xdata p = str;
+	int xdata vitesse = 0;
+	int xdata angle = 0;
+	int xdata coordX = 0;
+	int xdata coordY = 0;
+	bool xdata sortie = false;
+	int xdata cmp;
 	
 	while(*p != '\r' && sortie == false)
 	{
@@ -169,45 +169,45 @@ void Analyse_String(char str[])
 				switch (*p)
 				{
 					case '1':
-						out.Etat_Epreuve = epreuve1;
+						CMD_C.Etat_Epreuve = epreuve1;
 						sortie = true;
 						break;
 					case '2':
-						out.Etat_Epreuve = epreuve2;
+						CMD_C.Etat_Epreuve = epreuve2;
 						sortie = true;
 						break;
 					case '3':
-						out.Etat_Epreuve = epreuve3;
+						CMD_C.Etat_Epreuve = epreuve3;
 						sortie = true;
 						break;
 					case '4':
-						out.Etat_Epreuve = epreuve4;
+						CMD_C.Etat_Epreuve = epreuve4;
 						sortie = true;
 						break;
 					case '5':
-						out.Etat_Epreuve = epreuve5;
+						CMD_C.Etat_Epreuve = epreuve5;
 						sortie = true;
 						break;
 					case '6':
-						out.Etat_Epreuve = epreuve6;
+						CMD_C.Etat_Epreuve = epreuve6;
 						sortie = true;
 						break;
 					case '8':
-						out.Etat_Epreuve = epreuve8;
+						CMD_C.Etat_Epreuve = epreuve8;
 						sortie = true;
 						break;
 					default:
-						out.Etat_Epreuve = epreuve1;
+						CMD_C.Etat_Epreuve = epreuve1;
 						sortie = true;
 						break;
 				} // fin switch
 				break; // fin case D
 			case 'E' :
-				out.Etat_Epreuve = Fin_Epreuve;
+				CMD_C.Etat_Epreuve = Fin_Epreuve;
 				sortie = true;
 				break;
 			case 'Q' :
-				out.Etat_Epreuve = Stop_Urgence;
+				CMD_C.Etat_Epreuve = Stop_Urgence;
 				sortie = true;
 				break;
 			case 'T' :
@@ -219,12 +219,12 @@ void Analyse_String(char str[])
 					vitesse = (unsigned char) calculVitesse(p);
 					if(vitesse != 0)
 					{
-						out.Vitesse = vitesse;
+						CMD_C.Vitesse = vitesse;
 						sortie = true;
 					}
 					else
 					{
-						out.Vitesse = 0;
+						CMD_C.Vitesse = 0;
 						sortie = true;
 					}
 				}
@@ -238,8 +238,8 @@ void Analyse_String(char str[])
 				if(*p == '\r') // Pas de paramètre
 				{
 					sortie = true;
-					out.Etat_Mouvement = Avancer;
-					out.Vitesse = 20;
+					CMD_C.Etat_Mouvement = Avancer;
+					CMD_C.Vitesse = 20;
 				}
 				else if(*p != 'S')
 				{
@@ -247,33 +247,33 @@ void Analyse_String(char str[])
 					vitesse = calculVitesse(p);
 					if(vitesse != 0)
 					{
-						out.Vitesse = vitesse;
-						out.Etat_Mouvement = Avancer;
+						CMD_C.Vitesse = vitesse;
+						CMD_C.Etat_Mouvement = Avancer;
 						sortie = true;
 					}
 					else
 					{
-						out.Etat_Mouvement = Mouvement_non;
-						out.Vitesse = 0;
+						CMD_C.Etat_Mouvement = Mouvement_non;
+						CMD_C.Vitesse = 0;
 						sortie = true;
 					}
 				}
 				else if(*p == 'S')
         {  
-					int a = 0;
+					int xdata a = 0;
 					p++;
           if(*p == 'S')
           {
 						p++;
             if(*p == '\r') // Pas de paramètre
             {                 
-							out.ACQ_Duree = 0;
-              out.Etat_ACQ_Son = ACQ_non;
+							CMD_C.ACQ_Duree = 0;
+              CMD_C.Etat_ACQ_Son = ACQ_non;
               sortie = true;
             }
             if(*p != '\r')
             {
-							char tab[4];
+							char xdata tab[4];
 							p++;
               while(*p >= '0' && *p <= '9' && *p != '\0' && a<3)
               {
@@ -284,13 +284,13 @@ void Analyse_String(char str[])
               tab[a]='\0';                               
               if(atoi(tab) >= 1 && atoi(tab) <= 99)
               {
-                out.ACQ_Duree = atoi(tab);
-                out.Etat_ACQ_Son =ACQ_oui;
+                CMD_C.ACQ_Duree = atoi(tab);
+                CMD_C.Etat_ACQ_Son =ACQ_oui;
                 sortie = true;
               }
 							else
 							{
-								out.Etat_ACQ_Son =ACQ_non;
+								CMD_C.Etat_ACQ_Son =ACQ_non;
                 sortie = true;
 							}
             }
@@ -302,8 +302,8 @@ void Analyse_String(char str[])
 				if(*p != '\r') p++;
 				if(*p == '\r') // Pas de paramètre
 				{
-					out.Vitesse = 20;
-					out.Etat_Mouvement = Reculer;
+					CMD_C.Vitesse = 20;
+					CMD_C.Etat_Mouvement = Reculer;
 					sortie = true;
 				}
 				else
@@ -312,14 +312,14 @@ void Analyse_String(char str[])
 					vitesse = calculVitesse(p);
 					if(vitesse != 0)
 					{
-						out.Vitesse = vitesse;
-						out.Etat_Mouvement = Reculer;
+						CMD_C.Vitesse = vitesse;
+						CMD_C.Etat_Mouvement = Reculer;
 						sortie = true;
 					}
 					else
 					{
-						out.Etat_Mouvement = Mouvement_non;
-						out.Vitesse = 0;
+						CMD_C.Etat_Mouvement = Mouvement_non;
+						CMD_C.Vitesse = 0;
 						sortie = true;
 					}
 				}
@@ -329,7 +329,7 @@ void Analyse_String(char str[])
 				if(*p != '\r') p++;
 				if(*p == '\r')
 				{
-					out.Etat_Mouvement = Stopper;
+					CMD_C.Etat_Mouvement = Stopper;
 					sortie = true;
 				}
 				break;
@@ -340,7 +340,7 @@ void Analyse_String(char str[])
 					p++;
 					if(*p == '\r')
 					{
-						out.Etat_Mouvement = Rot_90D;
+						CMD_C.Etat_Mouvement = Rot_90D;
 						sortie = true;
 					}
 				}
@@ -349,7 +349,7 @@ void Analyse_String(char str[])
 					p++;
 					if(*p == '\r')
 					{
-						out.Etat_Mouvement = Rot_90G;
+						CMD_C.Etat_Mouvement = Rot_90G;
 						sortie = true;
 					}
 				}
@@ -358,7 +358,7 @@ void Analyse_String(char str[])
 					if(*p != '\r') p++;
 					if(*p == '\r')
 					{
-						out.Etat_Mouvement = Rot_180D;
+						CMD_C.Etat_Mouvement = Rot_180D;
 						sortie = true;
 					}
 					else
@@ -366,12 +366,12 @@ void Analyse_String(char str[])
 						p++;
 						if(*p == 'G')
 						{
-							out.Etat_Mouvement = Rot_180G;
+							CMD_C.Etat_Mouvement = Rot_180G;
 							sortie = true;
 						}
 						else
 						{
-							out.Etat_Mouvement = Rot_180D;
+							CMD_C.Etat_Mouvement = Rot_180D;
 							sortie = true;
 						}
 					}
@@ -391,13 +391,13 @@ void Analyse_String(char str[])
 								angle = calculAngle(p);
 								if(angle > 0 && angle <= 180)
 								{
-									out.Angle = angle;
-									out.Etat_Mouvement = Rot_AngD;
+									CMD_C.Angle = angle;
+									CMD_C.Etat_Mouvement = Rot_AngD;
 									sortie = true;
 								}
 								else
 								{
-									out.Etat_Mouvement = Rot_90D;
+									CMD_C.Etat_Mouvement = Rot_90D;
 									sortie = true;
 								}
 							}
@@ -411,32 +411,32 @@ void Analyse_String(char str[])
 								angle = calculAngle(p);
 								if(angle > 0 && angle <= 180)
 								{
-									out.Angle = angle;
-									out.Etat_Mouvement = RotAngG;
+									CMD_C.Angle = angle;
+									CMD_C.Etat_Mouvement = RotAngG;
 									sortie = true;
 								}
 								else
 								{
-									out.Etat_Mouvement = Rot_90D;
+									CMD_C.Etat_Mouvement = Rot_90D;
 									sortie = true;
 								}
 							}
 							else
 							{
-								out.Etat_Mouvement = Rot_90D;
+								CMD_C.Etat_Mouvement = Rot_90D;
 								sortie = true;
 							}
 						}
 						else
 						{
-							out.Etat_Mouvement = Mouvement_non;
+							CMD_C.Etat_Mouvement = Mouvement_non;
 							sortie = true;
 						}
 						
 					}
 					else if (*p == '\r') // Pas de paramètres donc cas par défaut
 					{
-						out.Etat_Mouvement = Rot_90D;
+						CMD_C.Etat_Mouvement = Rot_90D;
 						sortie = true;
 					}
 				}
@@ -460,7 +460,7 @@ void Analyse_String(char str[])
 					}
 					else
 					{
-						out.Etat_Mouvement = Mouvement_non;
+						CMD_C.Etat_Mouvement = Mouvement_non;
 						sortie = true;
 					}
 					if(*p == 'Y')
@@ -476,7 +476,7 @@ void Analyse_String(char str[])
 					}
 					else
 					{
-						out.Etat_Mouvement = Mouvement_non;
+						CMD_C.Etat_Mouvement = Mouvement_non;
 						sortie = true;
 					}
 					if(*p == 'A')
@@ -485,20 +485,20 @@ void Analyse_String(char str[])
 						if(*p == ':')
 						{
 							p++;
-							out.Angle = calculAngle(p);
-							out.Etat_Mouvement = Mouvement_non;
+							CMD_C.Angle = calculAngle(p);
+							CMD_C.Etat_Mouvement = Mouvement_non;
 							sortie = true;
 						}
 					}
 					else
 					{
-						out.Etat_Mouvement = Mouvement_non;
+						CMD_C.Etat_Mouvement = Mouvement_non;
 						sortie = true;
 					}
 				}
 				else
 					{
-						out.Etat_Mouvement = Mouvement_non;
+						CMD_C.Etat_Mouvement = Mouvement_non;
 						sortie = true;
 					}
 				break; // fin case G
@@ -515,13 +515,13 @@ void Analyse_String(char str[])
 						p++;
             if(*p == '\r')//pas de parametres
             {
-              out.Etat_DCT_Obst = oui_360;
+              CMD_C.Etat_DCT_Obst = oui_360;
               cmp=1;
             }
             else//presence espace ou caractere
             {
-							int a = 0;
-							char tab[5];
+							int xdata a = 0;
+							char xdata tab[5];
               if(*p == ' ')//si espace
               {
 								p++;
@@ -535,12 +535,12 @@ void Analyse_String(char str[])
               tab[a]='\0';
               if(atoi(tab) == 180 )
               {
-                out.Etat_DCT_Obst = oui_180;
+                CMD_C.Etat_DCT_Obst = oui_180;
                 cmp=1;
               }
               else
               {
-								out.Etat_DCT_Obst = oui_360;
+								CMD_C.Etat_DCT_Obst = oui_360;
                 cmp=1;
               }
               p++;
@@ -554,7 +554,7 @@ void Analyse_String(char str[])
 								p++;
                 if(*p == '\r')//pas de parametres
                 {
-										out.DCT_Obst_Resolution =30;
+										CMD_C.DCT_Obst_Resolution =30;
 										cmp++;
 								}	
                 if(*p ==':')
@@ -570,12 +570,12 @@ void Analyse_String(char str[])
                   tab[a]='\0';
                   if(atoi(tab) >= 5 && atoi(tab) <= 45 )
                   {
-										out.DCT_Obst_Resolution = atoi(tab);
+										CMD_C.DCT_Obst_Resolution = atoi(tab);
                     cmp++;
                   }
                   else
                   {
-                    out.DCT_Obst_Resolution =30;
+                    CMD_C.DCT_Obst_Resolution =30;
 										cmp++;
                   }
                   if(cmp == 2)
@@ -588,19 +588,103 @@ void Analyse_String(char str[])
 					}
 				}
 				break;
+				
+				case 'L':
+					p++;
+					if(*p == ' ')
+					{
+						p++;
+						if(*p == 'I')
+						{
+							CMD_C.Etat_Lumiere = Allumer;
+							p++; // :
+							p++; // Intensité
+							p = calculIntensite(p); // D
+							p++; // :
+							p++; // Durée allumage
+							p = calculDureeAllumage(p); // E 
+							p++; // :
+							p++; // Durée extinction
+							p = calculDureeExtinction(p); // N
+							p++; // : 
+							p++; // Nombre
+							calculNombre(p);
+							sortie = true;
+						}
+					}
+					else if(*p == '\r')
+					{
+						CMD_C.Etat_Lumiere = Allumer;
+						CMD_C.Lumiere_Intensite = 100;
+						CMD_C.Lumiere_Duree = 99;
+						CMD_C.Lumiere_Extinction = 0;
+						CMD_C.Lumiere_Nbre = 1;
+						sortie = true;
+					}
+					else if(*p == 'S')
+					{
+						p++;
+						if(*p == '\r')
+						{
+							CMD_C.Etat_Lumiere = Eteindre;
+							sortie = true;
+						}
+					}
+					else
+					{
+						sortie = true;
+					}
+					break;
+				case 'C':
+					p++;
+					if(*p == 'S')
+					{
+						p++; // Espace
+						p++; // Lettre
+						switch(*p)
+						{
+							case 'C':
+								CMD_C.Etat_Servo = Servo_C;
+								break;
+							case 'H':
+								CMD_C.Etat_Servo = Servo_H;
+								break;
+							case 'V':
+								CMD_C.Etat_Servo = Servo_V;
+								break;
+							default:
+								CMD_C.Etat_Servo = Servo_non;
+								break;
+						}
+						if(*p != '\r')
+						{
+							p++; // Espace
+							p++;
+							if(*p == 'A')
+							{
+								p++; // :
+								p++; // Valeur angle
+								CMD_C.Servo_Angle = calculAngleServo(p);
+							}
+						}								
+					}
+					sortie = true;
+					break;
+					default:
+						sortie = true;
+						break;
 			} // fin switch
 	} // while
 } // fin fonction
 
-int calculVitesse(char *str)
+int calculVitesse(char* p)
 {
-	char *p = str;
 	
-	char vitesse[5];
+	char xdata vitesse[5];
 	
-	int i = 0;
+	int xdata i = 0;
 	
-	while(*p >= '0' && *p <= '9' && *p != '\0')
+	while(*p >= '0' && *p <= '9' && *p != '\r')
 	{
 		vitesse[i] = *p;
 		i++;
@@ -614,13 +698,34 @@ int calculVitesse(char *str)
 		return 0;
 }
 
-int calculAngle (char* str)
+int calculAngle (char* p)
 {
-	char *p = str;
 	
-	char angle[6];
+	char xdata angle[6];
 	
-	int i = 0;
+	int xdata i = 0;
+	
+	while((*p >= '0' && *p <= '9') || *p=='-')
+	{
+		angle[i] = *p;
+		i++;
+		p++;
+	}
+	angle[i]='\0';
+					
+	if(atoi(angle) >= 0 && atoi(angle) <= 90)
+		return atoi(angle);
+	else if(atoi(angle) >= -90 && atoi(angle) < 0)
+		return atoi(angle) + 256;
+	else
+		return 0;
+
+}
+int calculAngleServo (char* p)
+{	
+	char xdata angle[6];
+	
+	int xdata i = 0;
 	
 	while((*p >= '0' && *p <= '9') || *p=='-')
 	{
@@ -637,14 +742,12 @@ int calculAngle (char* str)
 
 }
 
-char* calculCoord(char* str, char c)
-{
-	char *p =str;
+char* calculCoord(char* p, char c)
+{	
+	char xdata coord[4];
 	
-	char coord[4];
-	
-	int i = 0;
-	int t = 0;
+	int xdata i = 0;
+	int xdata t = 0;
 	
 	while((*p >='0' && *p <='9') || *p == '-')
 	{
@@ -654,30 +757,120 @@ char* calculCoord(char* str, char c)
 	}
 	coord[i] = '\0';
 	
-	
   t	= atoi(coord);
 	t = 256 + t;
 	
 	if(c == 'X')
 	{
 		if(atoi(coord) >= 0 && atoi(coord) <= 99)
-			out.Coord_X = atoi(coord);
+			CMD_C.Coord_X = atoi(coord);
 		else if(atoi(coord) >= -99 && atoi(coord) <0)
-			out.Coord_X = atoi(coord) + 256;
+			CMD_C.Coord_X = atoi(coord) + 256;
 		else
-			out.Coord_X = 0;
+			CMD_C.Coord_X = 0;
 	}
 	else if(c == 'Y')
 	{
 		if(atoi(coord) >= - 99 && atoi(coord) <= 99)
-			out.Coord_Y = atoi(coord);
+			CMD_C.Coord_Y = atoi(coord);
 		else if(atoi(coord) >= -99 && atoi(coord) <0)
-			out.Coord_Y = atoi(coord) + 256;
+			CMD_C.Coord_Y = atoi(coord) + 256;
 		else
-			out.Coord_Y = 0;
+			CMD_C.Coord_Y = 0;
 	}
 	
 	
 	return p;
 	
+}
+
+char* calculIntensite(char* p) // Traite et renvoie le pointeur sur la lettre suivante
+{
+	char xdata intensite[4];
+	int xdata i = 0;
+	while(*p >= '0' && *p <= '9' && *p != '\r')
+	{
+		intensite[i] = *p;
+		p++;
+		i++;
+	}
+	if(*p != '\r') p++;
+	intensite[i] = '\0';
+	if(atoi(intensite) >= 1 && atoi(intensite) <=100)
+	{
+		CMD_C.Lumiere_Intensite = atoi(intensite);
+	}
+	else
+	{
+		CMD_C.Lumiere_Intensite = 100;
+	}
+	return p;
+}
+
+char* calculDureeAllumage(char* p) // Traite et renvoie le pointeur sur la lettre suivante
+{
+	char xdata duree[4];
+	int xdata i = 0;
+	while(*p >= '0' && *p <= '9' && *p != '\r')
+	{
+		duree[i] = *p;
+		p++;
+		i++;
+	}
+	if(*p != '\r') p++;
+	duree[i] = '\0';
+	if(atoi(duree) >= 1 && atoi(duree) <=99)
+	{
+		CMD_C.Lumiere_Duree = atoi(duree);
+	}
+	else
+	{
+		CMD_C.Lumiere_Duree = 99;
+	}
+	return p;
+}
+
+char* calculDureeExtinction(char* p) // Traite et renvoie le pointeur sur la lettre suivante
+{
+	char xdata duree[4];
+	int xdata i = 0;
+	while(*p >= '0' && *p <= '9' && *p != '\r')
+	{
+		duree[i] = *p;
+		p++;
+		i++;
+	}
+	if(*p != '\r') p++;
+	duree[i] = '\0';
+	if(atoi(duree) >= 0 && atoi(duree) <=99)
+	{
+		CMD_C.Lumiere_Extinction = atoi(duree);
+	}
+	else
+	{
+		CMD_C.Lumiere_Extinction = 0;
+	}
+	return p;
+}
+
+void calculNombre(char* p)
+{
+	char xdata nombre[4];
+	int xdata i = 0;
+	while(*p >= '0' && *p <= '9' && *p != '\r')
+	{
+		nombre[i] = *p;
+		p++;
+		i++;
+	}
+	if(*p != '\r') p++;
+	nombre[i] = '\0';
+	if(atoi(nombre) >= 1 && atoi(nombre) <=99)
+	{
+		CMD_C.Lumiere_Nbre = atoi(nombre);
+	}
+	else
+	{
+		CMD_C.Lumiere_Nbre = 1;
+	}
 }
