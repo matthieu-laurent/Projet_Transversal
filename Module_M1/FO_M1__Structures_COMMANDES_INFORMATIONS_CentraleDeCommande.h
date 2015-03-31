@@ -1,3 +1,5 @@
+#ifndef FO_M1__STRUCTURES_COMMANDES_INFORMATIONS_CENTRALEDECOMMANDE_H
+#define FO_M1__STRUCTURES_COMMANDES_INFORMATIONS_CENTRALEDECOMMANDE_H
 
 typedef unsigned char BYTE;
 typedef char SIGNED_BYTE;
@@ -40,12 +42,12 @@ typedef struct COMMANDES       // Cette structure contient toutes les commandes 
                                   // Paramètres de la commande précédente:     
    BYTE  Lumiere_Intensite;          // Paramètre intensité lumineuse 							  
    BYTE  Lumiere_Duree;              // Paramètre durée d'allumage
-   BYTE  Lumire_Extinction;          // Paramètre durée d'extinction
+   BYTE  Lumiere_Extinction;          // Paramètre durée d'extinction
    BYTE  Lumiere_Nbre;               // Paramètre nombre de cycles d'allumage/extinction
    
    enum  Servo Etat_Servo;        // Contient la commande de positionnement d'un servo "CS C" "CS H" "CS V" 
                                   // Paramètre de la commande précédente:     
-   SIGNED_BYTE  Servo_Angle;         //Paramètre angle de rotation	 
+   BYTE  Servo_Angle;         //Paramètre angle de rotation	 
 } OUT_M1;
 
 
@@ -86,5 +88,7 @@ typedef struct INFORMATIONS       // Cette structure contient toutes les informa
 } IN_M1;
 // *******************************************************************************************
 
-OUT_M1 out;
-IN_M1 in;
+OUT_M1 xdata CMD_C;
+IN_M1 xdata in;
+
+#endif
