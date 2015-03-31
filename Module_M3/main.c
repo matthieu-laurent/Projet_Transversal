@@ -16,6 +16,7 @@
 #include <config_global.h>
 #endif				// Configuration globales du µprocesseur
 #include <init_pca.h>
+#include <fonctions_servo.h>
 
 sbit P14=P1^4;
 //------------------------------------------------------------------------------------
@@ -29,7 +30,8 @@ sbit P14=P1^4;
 // MAIN Routine
 //------------------------------------------------------------------------------------
 void main (void) {
-	int i=0;	
+	unsigned long int i=0;
+	char Angle=0;
 	Init_Device();
 	PCA_Init();
 	EA=1; // Autorisation interruptions
@@ -37,6 +39,14 @@ void main (void) {
 
 
 	while (1) { // Boucle infinie
+		
+		for(i=0;i<500000;i++);
+		CDE_Servo_V(Angle);
+		Angle=Angle+10;
+		if(Angle==90)
+		{
+			Angle=-90;
+		}
 		
 	}
 }
