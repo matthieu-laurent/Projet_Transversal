@@ -1,3 +1,5 @@
+#ifndef LIB_BSE_UART_H
+#define LIB_BSE_UART_H
 //------------------------------------------------------------------------------------
 // Projet BSE 2014 - Fichier configuration et gestion de l'UART0
 //------------------------------------------------------------------------------------
@@ -20,8 +22,20 @@ void Demo_UART();
 
 void Analyse_String(char* str);
 
-int calculVitesse(char *str);
+int calculVitesse(char* p);
 
-int calculAngle(char *str);
+int calculAngle(char* p);
 
-char* calculCoord(char* str, char c);
+int calculAngleServo (char* p);
+
+char* calculCoord(char* p, char c);
+
+char* calculIntensite(char* p);
+
+char* calculDureeAllumage(char* p);
+
+char* calculDureeExtinction(char* p);
+
+void calculNombre(char* p);
+
+#endif
