@@ -38,4 +38,14 @@ char* calculDureeExtinction(char* p);
 
 void calculNombre(char* p);
 
+char* Invite_Commandes();
+
+char* Arrivee_point();
+
+char* Servomoteur_positionne(char* b);
+
+char* Detection_obstacle(int angle,int distance);
+
+char* Info_auxilliaire(char* a);
+
 #endif
