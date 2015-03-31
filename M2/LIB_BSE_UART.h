@@ -16,6 +16,7 @@ char Putchar(char c, char csg_tempo);
 char Send_String(char *char_ptr);
 char Getchar(void);
 void Action_UART1();
+void ISR_UART1(void);
 
 //*****************************************************************************************************************************************
 // Fonction du Serializer
