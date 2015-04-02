@@ -2,6 +2,9 @@
 #include <string.h>
 #include <math.h>
 
+#include <FO_M1__Structures_COMMANDES_INFORMATIONS_CentraleDeCommande.h>
+
+
 /***************************************************************************************************************
 Sous ensemble FO-M3: Commande des servomoteurs
 
@@ -22,45 +25,93 @@ les registres suivants: PCA0CPL2 et PCA0CPH2
 6) vitesse de rotation:
 Operating Speed (4.8V): 0.19sec/60° at no load
 Operating Speed (6.0V): 0.15sec/60° at no load
+
+7) commande angle (récupérée en hexa):	0<=> 0 ; 127 <=> 127 <=> 127 ; 128 <=> -128 ; 255 <=> -1
+
+	
 *****************************************************************************************************************/
 
-// !!!!!!!!!!!!!!! inclure le ".h" du module M1 +++++ enum +++ faire des if !!!!!!!!!!!!!!
 
 
 /* variable globale */
-char Angle_actuel=0;
+char Angle_actuel_V=0;
+char Angle_actuel_H=0;
+char Angle_actuel_C=0;
+//extern cmd_c;
 
-unsigned char CDE_Servo_V(char Angle){
+unsigned char CDE_Servo(){
+	unsigned char Angle=cmd_c.Servo_Angle;
+	//if(Angle>=128) Angle-=256;
 	double codeDec;
-	
 	int duree=0; // temps pour que le servomoteur passe de la position "Angle_actuel" à la position final "Angle"
-
-	Angle_actuel=Angle; // Mise à jour angle
 	
+		
+	if((Angle_actuel_C==Angle&&cmd_c.Etat_Servo==Servo_C)||(Angle_actuel_H==Angle&&cmd_c.Etat_Servo==Servo_H)||(Angle_actuel_V==Angle&&cmd_c.Etat_Servo==Servo_V))
+	{
+		return '0';
+	}	
+	else{
 	
-	
-	codeDec= 17.656*Angle + 62706;
-	
-	PCA0CPL2  = ((int)codeDec)%256;
-  PCA0CPH2  = (int)(codeDec/256);
-	
-	// Estimation durée
-	// cas 1 : Operating Speed (4.8V): 0.19sec/60° at no load
-	if(Angle>Angle_actuel)
-		duree=0,19*(Angle-Angle_actuel)/60; // unité duree: sec
-	else 
-		duree=0,19*(Angle_actuel-Angle)/60;
-	/*// cas 2 : Operating Speed (6.0V): 0.15sec/60° at no load
-	if(Angle>Angle_actuel)
-		duree=0,15*(Angle-Angle_actuel)/60; // unité duree: sec
-	else 
-		duree=0,15*(Angle_actuel-Angle)/60; */
-	
-	duree=duree*100; // duree en centième de seconde 
-	return (char)duree;
-
+		codeDec= 17.656*Angle + 62706;
+		
+		if(cmd_c.Etat_Servo==Servo_non)
+		{
+			return '0';
+		}
+		
+		if(cmd_c.Etat_Servo==Servo_C)
+		{
+			// Estimation durée
+			// cas 1 : Operating Speed (4.8V): 0.19sec/60° at no load
+			if(Angle>Angle_actuel_C)
+				duree=0,19*(Angle-Angle_actuel_C)/60; // unité duree: sec
+			else 
+				duree=0,19*(Angle_actuel_C-Angle)/60;
+			/*// cas 2 : Operating Speed (6.0V): 0.15sec/60° at no load
+			if(Angle>Angle_actuel_C)
+				duree=0,15*(Angle-Angle_actuel_C)/60; // unité duree: sec
+			else 
+				duree=0,15*(Angle_actuel-Angle_C)/60; */
+			
+			duree=duree*100; // duree en centième de seconde 
+			PCA0CPL0  = ((int)codeDec)%256;
+			PCA0CPH0  = (int)(codeDec/256);
+			
+			Angle_actuel_C=Angle; // MaJ Angle actuel
+		}
+		
+		if(cmd_c.Etat_Servo==Servo_H)
+		{
+		
+			if(Angle>Angle_actuel_H)
+				duree=0,19*(Angle-Angle_actuel_H)/60; // unité duree: sec
+			else 
+				duree=0,19*(Angle_actuel_H-Angle)/60;
+		
+			
+			duree=duree*100; // duree en centième de seconde 
+			
+			PCA0CPL1  = ((int)codeDec)%256;
+			PCA0CPH1  = (int)(codeDec/256);
+			
+			Angle_actuel_H=Angle; // MaJ Angle actuel
+		}
+		
+		if(cmd_c.Etat_Servo==Servo_V)
+		{
+			if(Angle>Angle_actuel_V)
+				duree=0,19*(Angle-Angle_actuel_V)/60; // unité duree: sec
+			else 
+				duree=0,19*(Angle_actuel_V-Angle)/60;
+			
+			PCA0CPL2  = ((int)codeDec)%256;
+			PCA0CPH2  = (int)(codeDec/256);
+			
+			Angle_actuel_V=Angle; // MaJ Angle actuel
+		}
+		
+		
+		
+		return (char)duree;
+	}
 }
-/*
-unsigned char CDE_Servo_H (char Angle){
-	return Angle;
-} */
