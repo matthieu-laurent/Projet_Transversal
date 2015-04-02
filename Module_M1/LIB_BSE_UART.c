@@ -512,7 +512,8 @@ int Analyse_String(char str[])
           p++;
           if(*p == 'B')   
           { 
-						p++;
+						if(*p != '\r') p++;
+						if(*p != '\r') p++;
             if(*p == '\r')//pas de parametres
             {
               cmd_c.Etat_DCT_Obst = oui_360;
