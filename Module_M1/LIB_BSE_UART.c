@@ -672,6 +672,12 @@ int Analyse_String(char str[])
 								p++; // Valeur angle
 								cmd_c.Servo_Angle = calculAngleServo(p);
 							}
+							else
+							{
+								cmd_c.Etat_Servo = Servo_non;
+								cmd_c.Servo_Angle = 0;
+								return 0;
+							}
 						}								
 					}
 					return 1;
