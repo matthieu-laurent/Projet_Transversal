@@ -159,7 +159,6 @@ int Analyse_String(char str[])
 	int xdata coordX = 0;
 	int xdata coordY = 0;
 	bool xdata sortie = false;
-	int xdata cmp;
 	
 	while(*p != '\r' && sortie == false)
 	{
@@ -511,85 +510,64 @@ int Analyse_String(char str[])
         if(*p == 'O')
         {
           p++;
-          if(*p == 'B')
-          //TRAITEMENT DU PARAMETRE D    
+          if(*p == 'B')   
           { 
 						p++;
             if(*p == '\r')//pas de parametres
             {
               cmd_c.Etat_DCT_Obst = oui_360;
-              cmp=1;
+							cmd_c.DCT_Obst_Resolution = 30;
+							return 1;
             }
-            else//presence espace ou caractere
-            {
-							int xdata a = 0;
-							char xdata tab[5];
-              if(*p == ' ')//si espace
-              {
-								p++;
-							}
-              while(*p >= '0' && *p <= '9' && *p != '\0' && a<3)    
-              {
-								tab[a] = *p;
-                a++;
-                p++;
-              }
-              tab[a]='\0';
-              if(atoi(tab) == 180 )
-              {
-                cmd_c.Etat_DCT_Obst = oui_180;
-                cmp=1;
-              }
-              else
-              {
-								cmd_c.Etat_DCT_Obst = oui_360;
-                cmp=1;
-              }
-              p++;
-              if(*p == ' ')//si espace
-              {
-								p++;
-							}
-              //TRAITEMENT DU PARAMETRE A:
-              if(*p =='A')
-              {    
-								p++;
-                if(*p == '\r')//pas de parametres
-                {
-										cmd_c.DCT_Obst_Resolution =30;
-										cmp++;
-								}	
-                if(*p ==':')
-                {  
+            else if(*p == 'D')
+						{
+							cmd_c.Etat_DCT_Obst = oui_180;
+							if(*p != '\r') p++;
+							if(*p != '\r') p++;
+							if(*p == 'A')
+							{
+								p++; // :
+								if(*p == ':')
+								{
 									p++;
-                  a=0;
-                  while(*p >= '0' && *p <= '9' && *p != '\0' && a<2)    
-                  {
-										tab[a] = *p;
-                    a++;
-                    p++;
-                  }
-                  tab[a]='\0';
-                  if(atoi(tab) >= 5 && atoi(tab) <= 45 )
-                  {
-										cmd_c.DCT_Obst_Resolution = atoi(tab);
-                    cmp++;
-                  }
-                  else
-                  {
-                    cmd_c.DCT_Obst_Resolution =30;
-										cmp++;
-                  }
-                  if(cmp == 2)
-                  {
-										return 1;
-                  }
-									else
-									{
-										return 0;
-									}
-                }        
-							}  
+									// Traitement angle
+									cmd_c.DCT_Obst_Resolution = calculAngleDCTObst(p);
+									if(cmd_c.DCT_Obst_Resolution == 0) cmd_c.Etat_DCT_Obst = DCT_non;
+									return 1;
+								}
+								else
+								{
+									cmd_c.Etat_DCT_Obst = DCT_non;
+									return 0;
+								}
+							}
+							if(*p == '\r')
+							{
+								cmd_c.DCT_Obst_Resolution = 30;
+								return 1;
+							}
+						}
+						else if(*p == 'A')
+            {
+								p++; // :
+								if(*p == ':')
+								{
+									p++;
+									// Traitement angle
+									cmd_c.DCT_Obst_Resolution = calculAngleDCTObst(p);
+									if(cmd_c.DCT_Obst_Resolution == 0) cmd_c.Etat_DCT_Obst = DCT_non;
+									return 1;
+								}
+								else
+								{
+									cmd_c.Etat_DCT_Obst = DCT_non;
+									return 0;
+								}
+						}
+						else
+						{
+							cmd_c.Etat_DCT_Obst = DCT_non;
+							return 0;
 						}
 					}
 				}
@@ -757,6 +735,25 @@ int calculAngleServo (char* p)
 	else
 		return 0;
 
+}
+
+int calculAngleDCTObst(char* p)
+{
+	char xdata angle[6];
+	
+	int xdata i = 0;
+	
+	while((*p >= '0' && *p <= '9'))
+	{
+		angle[i] = *p;
+		i++;
+		p++;
+	}
+	angle[i]='\0';
+	if(atoi(angle) >= 5 && atoi(angle) <= 45 && atoi(angle)%5 == 0)
+		return atoi(angle);
+	else
+		return 0;
 }
 
 char* calculCoord(char* p, char c)
