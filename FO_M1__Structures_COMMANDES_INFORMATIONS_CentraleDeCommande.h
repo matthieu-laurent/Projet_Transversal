@@ -88,7 +88,7 @@ typedef struct INFORMATIONS       // Cette structure contient toutes les informa
 } IN_M1;
 // *******************************************************************************************
 
-OUT_M1 xdata CMD_C;
+OUT_M1 xdata cmd_c;
 IN_M1 xdata in;
 
 #endif
