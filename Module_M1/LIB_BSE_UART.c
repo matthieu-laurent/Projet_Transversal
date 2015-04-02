@@ -170,45 +170,45 @@ void Analyse_String(char str[])
 				switch (*p)
 				{
 					case '1':
-						CMD_C.Etat_Epreuve = epreuve1;
+						cmd_c.Etat_Epreuve = epreuve1;
 						sortie = true;
 						break;
 					case '2':
-						CMD_C.Etat_Epreuve = epreuve2;
+						cmd_c.Etat_Epreuve = epreuve2;
 						sortie = true;
 						break;
 					case '3':
-						CMD_C.Etat_Epreuve = epreuve3;
+						cmd_c.Etat_Epreuve = epreuve3;
 						sortie = true;
 						break;
 					case '4':
-						CMD_C.Etat_Epreuve = epreuve4;
+						cmd_c.Etat_Epreuve = epreuve4;
 						sortie = true;
 						break;
 					case '5':
-						CMD_C.Etat_Epreuve = epreuve5;
+						cmd_c.Etat_Epreuve = epreuve5;
 						sortie = true;
 						break;
 					case '6':
-						CMD_C.Etat_Epreuve = epreuve6;
+						cmd_c.Etat_Epreuve = epreuve6;
 						sortie = true;
 						break;
 					case '8':
-						CMD_C.Etat_Epreuve = epreuve8;
+						cmd_c.Etat_Epreuve = epreuve8;
 						sortie = true;
 						break;
 					default:
-						CMD_C.Etat_Epreuve = epreuve1;
+						cmd_c.Etat_Epreuve = epreuve1;
 						sortie = true;
 						break;
 				} // fin switch
 				break; // fin case D
 			case 'E' :
-				CMD_C.Etat_Epreuve = Fin_Epreuve;
+				cmd_c.Etat_Epreuve = Fin_Epreuve;
 				sortie = true;
 				break;
 			case 'Q' :
-				CMD_C.Etat_Epreuve = Stop_Urgence;
+				cmd_c.Etat_Epreuve = Stop_Urgence;
 				sortie = true;
 				break;
 			case 'T' :
@@ -220,12 +220,12 @@ void Analyse_String(char str[])
 					vitesse = (unsigned char) calculVitesse(p);
 					if(vitesse != 0)
 					{
-						CMD_C.Vitesse = vitesse;
+						cmd_c.Vitesse = vitesse;
 						sortie = true;
 					}
 					else
 					{
-						CMD_C.Vitesse = 0;
+						cmd_c.Vitesse = 0;
 						sortie = true;
 					}
 				}
@@ -239,8 +239,8 @@ void Analyse_String(char str[])
 				if(*p == '\r') // Pas de paramètre
 				{
 					sortie = true;
-					CMD_C.Etat_Mouvement = Avancer;
-					CMD_C.Vitesse = 20;
+					cmd_c.Etat_Mouvement = Avancer;
+					cmd_c.Vitesse = 20;
 				}
 				else if(*p != 'S')
 				{
@@ -248,14 +248,14 @@ void Analyse_String(char str[])
 					vitesse = calculVitesse(p);
 					if(vitesse != 0)
 					{
-						CMD_C.Vitesse = vitesse;
-						CMD_C.Etat_Mouvement = Avancer;
+						cmd_c.Vitesse = vitesse;
+						cmd_c.Etat_Mouvement = Avancer;
 						sortie = true;
 					}
 					else
 					{
-						CMD_C.Etat_Mouvement = Mouvement_non;
-						CMD_C.Vitesse = 0;
+						cmd_c.Etat_Mouvement = Mouvement_non;
+						cmd_c.Vitesse = 0;
 						sortie = true;
 					}
 				}
@@ -268,8 +268,8 @@ void Analyse_String(char str[])
 						p++;
             if(*p == '\r') // Pas de paramètre
             {                 
-							CMD_C.ACQ_Duree = 0;
-              CMD_C.Etat_ACQ_Son = ACQ_non;
+							cmd_c.ACQ_Duree = 0;
+              cmd_c.Etat_ACQ_Son = ACQ_non;
               sortie = true;
             }
             if(*p != '\r')
@@ -285,13 +285,13 @@ void Analyse_String(char str[])
               tab[a]='\0';                               
               if(atoi(tab) >= 1 && atoi(tab) <= 99)
               {
-                CMD_C.ACQ_Duree = atoi(tab);
-                CMD_C.Etat_ACQ_Son =ACQ_oui;
+                cmd_c.ACQ_Duree = atoi(tab);
+                cmd_c.Etat_ACQ_Son =ACQ_oui;
                 sortie = true;
               }
 							else
 							{
-								CMD_C.Etat_ACQ_Son =ACQ_non;
+								cmd_c.Etat_ACQ_Son =ACQ_non;
                 sortie = true;
 							}
             }
@@ -303,8 +303,8 @@ void Analyse_String(char str[])
 				if(*p != '\r') p++;
 				if(*p == '\r') // Pas de paramètre
 				{
-					CMD_C.Vitesse = 20;
-					CMD_C.Etat_Mouvement = Reculer;
+					cmd_c.Vitesse = 20;
+					cmd_c.Etat_Mouvement = Reculer;
 					sortie = true;
 				}
 				else
@@ -313,14 +313,14 @@ void Analyse_String(char str[])
 					vitesse = calculVitesse(p);
 					if(vitesse != 0)
 					{
-						CMD_C.Vitesse = vitesse;
-						CMD_C.Etat_Mouvement = Reculer;
+						cmd_c.Vitesse = vitesse;
+						cmd_c.Etat_Mouvement = Reculer;
 						sortie = true;
 					}
 					else
 					{
-						CMD_C.Etat_Mouvement = Mouvement_non;
-						CMD_C.Vitesse = 0;
+						cmd_c.Etat_Mouvement = Mouvement_non;
+						cmd_c.Vitesse = 0;
 						sortie = true;
 					}
 				}
@@ -330,7 +330,7 @@ void Analyse_String(char str[])
 				if(*p != '\r') p++;
 				if(*p == '\r')
 				{
-					CMD_C.Etat_Mouvement = Stopper;
+					cmd_c.Etat_Mouvement = Stopper;
 					sortie = true;
 				}
 				break;
@@ -341,7 +341,7 @@ void Analyse_String(char str[])
 					p++;
 					if(*p == '\r')
 					{
-						CMD_C.Etat_Mouvement = Rot_90D;
+						cmd_c.Etat_Mouvement = Rot_90D;
 						sortie = true;
 					}
 				}
@@ -350,7 +350,7 @@ void Analyse_String(char str[])
 					p++;
 					if(*p == '\r')
 					{
-						CMD_C.Etat_Mouvement = Rot_90G;
+						cmd_c.Etat_Mouvement = Rot_90G;
 						sortie = true;
 					}
 				}
@@ -359,7 +359,7 @@ void Analyse_String(char str[])
 					if(*p != '\r') p++;
 					if(*p == '\r')
 					{
-						CMD_C.Etat_Mouvement = Rot_180D;
+						cmd_c.Etat_Mouvement = Rot_180D;
 						sortie = true;
 					}
 					else
@@ -367,12 +367,12 @@ void Analyse_String(char str[])
 						p++;
 						if(*p == 'G')
 						{
-							CMD_C.Etat_Mouvement = Rot_180G;
+							cmd_c.Etat_Mouvement = Rot_180G;
 							sortie = true;
 						}
 						else
 						{
-							CMD_C.Etat_Mouvement = Rot_180D;
+							cmd_c.Etat_Mouvement = Rot_180D;
 							sortie = true;
 						}
 					}
@@ -392,13 +392,13 @@ void Analyse_String(char str[])
 								angle = calculAngle(p);
 								if(angle > 0 && angle <= 180)
 								{
-									CMD_C.Angle = angle;
-									CMD_C.Etat_Mouvement = Rot_AngD;
+									cmd_c.Angle = angle;
+									cmd_c.Etat_Mouvement = Rot_AngD;
 									sortie = true;
 								}
 								else
 								{
-									CMD_C.Etat_Mouvement = Rot_90D;
+									cmd_c.Etat_Mouvement = Rot_90D;
 									sortie = true;
 								}
 							}
@@ -412,32 +412,32 @@ void Analyse_String(char str[])
 								angle = calculAngle(p);
 								if(angle > 0 && angle <= 180)
 								{
-									CMD_C.Angle = angle;
-									CMD_C.Etat_Mouvement = RotAngG;
+									cmd_c.Angle = angle;
+									cmd_c.Etat_Mouvement = RotAngG;
 									sortie = true;
 								}
 								else
 								{
-									CMD_C.Etat_Mouvement = Rot_90D;
+									cmd_c.Etat_Mouvement = Rot_90D;
 									sortie = true;
 								}
 							}
 							else
 							{
-								CMD_C.Etat_Mouvement = Rot_90D;
+								cmd_c.Etat_Mouvement = Rot_90D;
 								sortie = true;
 							}
 						}
 						else
 						{
-							CMD_C.Etat_Mouvement = Mouvement_non;
+							cmd_c.Etat_Mouvement = Mouvement_non;
 							sortie = true;
 						}
 						
 					}
 					else if (*p == '\r') // Pas de paramètres donc cas par défaut
 					{
-						CMD_C.Etat_Mouvement = Rot_90D;
+						cmd_c.Etat_Mouvement = Rot_90D;
 						sortie = true;
 					}
 				}
@@ -461,7 +461,7 @@ void Analyse_String(char str[])
 					}
 					else
 					{
-						CMD_C.Etat_Mouvement = Mouvement_non;
+						cmd_c.Etat_Mouvement = Mouvement_non;
 						sortie = true;
 					}
 					if(*p == 'Y')
@@ -477,7 +477,7 @@ void Analyse_String(char str[])
 					}
 					else
 					{
-						CMD_C.Etat_Mouvement = Mouvement_non;
+						cmd_c.Etat_Mouvement = Mouvement_non;
 						sortie = true;
 					}
 					if(*p == 'A')
@@ -486,20 +486,20 @@ void Analyse_String(char str[])
 						if(*p == ':')
 						{
 							p++;
-							CMD_C.Angle = calculAngle(p);
-							CMD_C.Etat_Mouvement = Mouvement_non;
+							cmd_c.Angle = calculAngle(p);
+							cmd_c.Etat_Mouvement = Mouvement_non;
 							sortie = true;
 						}
 					}
 					else
 					{
-						CMD_C.Etat_Mouvement = Mouvement_non;
+						cmd_c.Etat_Mouvement = Mouvement_non;
 						sortie = true;
 					}
 				}
 				else
 					{
-						CMD_C.Etat_Mouvement = Mouvement_non;
+						cmd_c.Etat_Mouvement = Mouvement_non;
 						sortie = true;
 					}
 				break; // fin case G
@@ -516,7 +516,7 @@ void Analyse_String(char str[])
 						p++;
             if(*p == '\r')//pas de parametres
             {
-              CMD_C.Etat_DCT_Obst = oui_360;
+              cmd_c.Etat_DCT_Obst = oui_360;
               cmp=1;
             }
             else//presence espace ou caractere
@@ -536,12 +536,12 @@ void Analyse_String(char str[])
               tab[a]='\0';
               if(atoi(tab) == 180 )
               {
-                CMD_C.Etat_DCT_Obst = oui_180;
+                cmd_c.Etat_DCT_Obst = oui_180;
                 cmp=1;
               }
               else
               {
-								CMD_C.Etat_DCT_Obst = oui_360;
+								cmd_c.Etat_DCT_Obst = oui_360;
                 cmp=1;
               }
               p++;
@@ -555,7 +555,7 @@ void Analyse_String(char str[])
 								p++;
                 if(*p == '\r')//pas de parametres
                 {
-										CMD_C.DCT_Obst_Resolution =30;
+										cmd_c.DCT_Obst_Resolution =30;
 										cmp++;
 								}	
                 if(*p ==':')
@@ -571,12 +571,12 @@ void Analyse_String(char str[])
                   tab[a]='\0';
                   if(atoi(tab) >= 5 && atoi(tab) <= 45 )
                   {
-										CMD_C.DCT_Obst_Resolution = atoi(tab);
+										cmd_c.DCT_Obst_Resolution = atoi(tab);
                     cmp++;
                   }
                   else
                   {
-                    CMD_C.DCT_Obst_Resolution =30;
+                    cmd_c.DCT_Obst_Resolution =30;
 										cmp++;
                   }
                   if(cmp == 2)
@@ -597,7 +597,7 @@ void Analyse_String(char str[])
 						p++;
 						if(*p == 'I')
 						{
-							CMD_C.Etat_Lumiere = Allumer;
+							cmd_c.Etat_Lumiere = Allumer;
 							p++; // :
 							p++; // Intensité
 							p = calculIntensite(p); // D
@@ -615,11 +615,11 @@ void Analyse_String(char str[])
 					}
 					else if(*p == '\r')
 					{
-						CMD_C.Etat_Lumiere = Allumer;
-						CMD_C.Lumiere_Intensite = 100;
-						CMD_C.Lumiere_Duree = 99;
-						CMD_C.Lumiere_Extinction = 0;
-						CMD_C.Lumiere_Nbre = 1;
+						cmd_c.Etat_Lumiere = Allumer;
+						cmd_c.Lumiere_Intensite = 100;
+						cmd_c.Lumiere_Duree = 99;
+						cmd_c.Lumiere_Extinction = 0;
+						cmd_c.Lumiere_Nbre = 1;
 						sortie = true;
 					}
 					else if(*p == 'S')
@@ -627,7 +627,7 @@ void Analyse_String(char str[])
 						p++;
 						if(*p == '\r')
 						{
-							CMD_C.Etat_Lumiere = Eteindre;
+							cmd_c.Etat_Lumiere = Eteindre;
 							sortie = true;
 						}
 					}
@@ -645,16 +645,16 @@ void Analyse_String(char str[])
 						switch(*p)
 						{
 							case 'C':
-								CMD_C.Etat_Servo = Servo_C;
+								cmd_c.Etat_Servo = Servo_C;
 								break;
 							case 'H':
-								CMD_C.Etat_Servo = Servo_H;
+								cmd_c.Etat_Servo = Servo_H;
 								break;
 							case 'V':
-								CMD_C.Etat_Servo = Servo_V;
+								cmd_c.Etat_Servo = Servo_V;
 								break;
 							default:
-								CMD_C.Etat_Servo = Servo_non;
+								cmd_c.Etat_Servo = Servo_non;
 								break;
 						}
 						if(*p != '\r')
@@ -665,7 +665,7 @@ void Analyse_String(char str[])
 							{
 								p++; // :
 								p++; // Valeur angle
-								CMD_C.Servo_Angle = calculAngleServo(p);
+								cmd_c.Servo_Angle = calculAngleServo(p);
 							}
 						}								
 					}
@@ -764,20 +764,20 @@ char* calculCoord(char* p, char c)
 	if(c == 'X')
 	{
 		if(atoi(coord) >= 0 && atoi(coord) <= 99)
-			CMD_C.Coord_X = atoi(coord);
+			cmd_c.Coord_X = atoi(coord);
 		else if(atoi(coord) >= -99 && atoi(coord) <0)
-			CMD_C.Coord_X = atoi(coord) + 256;
+			cmd_c.Coord_X = atoi(coord) + 256;
 		else
-			CMD_C.Coord_X = 0;
+			cmd_c.Coord_X = 0;
 	}
 	else if(c == 'Y')
 	{
 		if(atoi(coord) >= - 99 && atoi(coord) <= 99)
-			CMD_C.Coord_Y = atoi(coord);
+			cmd_c.Coord_Y = atoi(coord);
 		else if(atoi(coord) >= -99 && atoi(coord) <0)
-			CMD_C.Coord_Y = atoi(coord) + 256;
+			cmd_c.Coord_Y = atoi(coord) + 256;
 		else
-			CMD_C.Coord_Y = 0;
+			cmd_c.Coord_Y = 0;
 	}
 	
 	
@@ -799,11 +799,11 @@ char* calculIntensite(char* p) // Traite et renvoie le pointeur sur la lettre su
 	intensite[i] = '\0';
 	if(atoi(intensite) >= 1 && atoi(intensite) <=100)
 	{
-		CMD_C.Lumiere_Intensite = atoi(intensite);
+		cmd_c.Lumiere_Intensite = atoi(intensite);
 	}
 	else
 	{
-		CMD_C.Lumiere_Intensite = 100;
+		cmd_c.Lumiere_Intensite = 100;
 	}
 	return p;
 }
@@ -822,11 +822,11 @@ char* calculDureeAllumage(char* p) // Traite et renvoie le pointeur sur la lettr
 	duree[i] = '\0';
 	if(atoi(duree) >= 1 && atoi(duree) <=99)
 	{
-		CMD_C.Lumiere_Duree = atoi(duree);
+		cmd_c.Lumiere_Duree = atoi(duree);
 	}
 	else
 	{
-		CMD_C.Lumiere_Duree = 99;
+		cmd_c.Lumiere_Duree = 99;
 	}
 	return p;
 }
@@ -845,11 +845,11 @@ char* calculDureeExtinction(char* p) // Traite et renvoie le pointeur sur la let
 	duree[i] = '\0';
 	if(atoi(duree) >= 0 && atoi(duree) <=99)
 	{
-		CMD_C.Lumiere_Extinction = atoi(duree);
+		cmd_c.Lumiere_Extinction = atoi(duree);
 	}
 	else
 	{
-		CMD_C.Lumiere_Extinction = 0;
+		cmd_c.Lumiere_Extinction = 0;
 	}
 	return p;
 }
@@ -868,11 +868,11 @@ void calculNombre(char* p)
 	nombre[i] = '\0';
 	if(atoi(nombre) >= 1 && atoi(nombre) <=99)
 	{
-		CMD_C.Lumiere_Nbre = atoi(nombre);
+		cmd_c.Lumiere_Nbre = atoi(nombre);
 	}
 	else
 	{
-		CMD_C.Lumiere_Nbre = 1;
+		cmd_c.Lumiere_Nbre = 1;
 	}
 }
 
