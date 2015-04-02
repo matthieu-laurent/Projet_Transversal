@@ -73,14 +73,14 @@ void Arret()
 
 void Rotation_Droite_90(int vitesse)
 {
-	S_INPUTS.Ticks_mot2=970;
+	S_INPUTS.Ticks_mot2=975;
 	S_INPUTS.Vitesse_Mot2=vitesse;
 	S_INPUTS.Etat_Commande=digo_2;
 }
 
 void Rotation_Gauche_90(int vitesse)
 {
-	S_INPUTS.Ticks_mot1=970;
+	S_INPUTS.Ticks_mot1=975;
 	S_INPUTS.Vitesse_Mot1=vitesse;
 	S_INPUTS.Etat_Commande=digo_1;
 }
@@ -177,67 +177,64 @@ char Getchar(void)
 
 
 
+
 void Action_UART1()
 {
+	char str[5];
+	
 	if(S_INPUTS.Etat_Commande!=Commande_non)
 	{
 		switch(S_INPUTS.Etat_Commande)
 		{
 			case mogo_1_2 : 
 				Send_String("mogo 1:");
-				Putchar('0'+S_INPUTS.Vitesse_Mot1,10);
+				sprintf(str,"%d",(int)S_INPUTS.Vitesse_Mot1);
+				Send_String(str);
 				Send_String(" 2:");
-				Putchar('0'+S_INPUTS.Vitesse_Mot2,10);
-				Putchar('\r',10);
+				sprintf(str,"%d\r",(int)S_INPUTS.Vitesse_Mot2);
+				Send_String(str);
 			break;
 			
 			case digo_1 :  
 				Send_String("digo 1:");
-				Putchar('0'+S_INPUTS.Ticks_mot1,10);
+				sprintf(str,"%d",(int)S_INPUTS.Ticks_mot1);
+				Send_String(str);
 				Send_String(":");
-				Putchar('0'+S_INPUTS.Vitesse_Mot1,10);
-				Putchar('\r',10);
+				sprintf(str,"%d\r",(int)S_INPUTS.Vitesse_Mot1);
+				Send_String(str);
 			break;
 			
 			case digo_2 :  
 				Send_String("digo 2:");
-				Putchar('0'+S_INPUTS.Ticks_mot2,10);
+				sprintf(str,"%d",(int)S_INPUTS.Ticks_mot2);
+				Send_String(str);
 				Send_String(":");
-				Putchar('0'+S_INPUTS.Vitesse_Mot2,10);
-				Putchar('\r',10);
+				sprintf(str,"%d\r",(int)S_INPUTS.Vitesse_Mot2);
+				Send_String(str);
 			break;
 			
 			case digo_1_2 :  
 				Send_String("digo 1:");
-				Putchar('0'+S_INPUTS.Ticks_mot1,10);
+				sprintf(str,"%d",(int)S_INPUTS.Ticks_mot1);
+				Send_String(str);
 				Send_String(":");
-				Putchar(S_INPUTS.Vitesse_Mot1,10);
+				sprintf(str,"%d",(int)S_INPUTS.Vitesse_Mot1);
+				Send_String(str);
 				Send_String(" 2:");
-				Putchar('0'+S_INPUTS.Ticks_mot2,10);
+				sprintf(str,"%d",(int)S_INPUTS.Ticks_mot2);
+				Send_String(str);
 				Send_String(":");
-				Putchar('0'+S_INPUTS.Vitesse_Mot2,10);
-				Putchar('\r',10);
+				sprintf(str,"%d\r",(int)S_INPUTS.Vitesse_Mot2);
+				Send_String(str);
 			break;
 			
 			case Stop :
-				Send_String("stop");
-				Putchar('\r',10);
+				Send_String("stop\r");
 			break;	
 		}
 		S_INPUTS.Etat_Commande=Commande_non;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
