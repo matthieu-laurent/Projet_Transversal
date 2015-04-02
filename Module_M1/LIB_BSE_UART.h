@@ -28,7 +28,7 @@ int calculAngle(char* p);
 
 int calculAngleServo (char* p);
 
-int calculAngleDCTObst(char* p)
+int calculAngleDCTObst(char* p);
 
 char* calculCoord(char* p, char c);
 
