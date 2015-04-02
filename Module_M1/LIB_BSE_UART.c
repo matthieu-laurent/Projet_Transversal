@@ -746,7 +746,7 @@ int calculAngleServo (char* p)
 	}
 	angle[i]='\0';
 					
-	if(atoi(angle) >= -180 && atoi(angle) <= 180)
+	if(atoi(angle) >= -90 && atoi(angle) <= 90)
 		return atoi(angle);
 	else
 		return 0;
