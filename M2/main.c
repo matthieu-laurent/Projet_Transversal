@@ -1,3 +1,14 @@
+//------------------------------------------------------------------------------------
+// Projet BSE 2014 - Fichier main
+//------------------------------------------------------------------------------------
+//
+// AUTH: FARAMOND Victor & CHENE Charly
+// DATE: 06-10-2014
+// Target: C8051F02x
+//------------------------------------------------------------------------------------
+// Includes
+//------------------------------------------------------------------------------------
+// SFR declarations
 
 #include <LIB_BSE_UART.h>
 
@@ -6,19 +17,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define SYSCLK 22118400 //approximate SYSCLK frequency in Hz
-#define BAUDRATE 9600 // Baud rate of UART in bps
-#define TICK_CLK 200 // (en hertz)
-
-
 void main()
 {
-Init_Device();
-CFG_Clock_UART1();
-CFG_UART1();
+	unsigned long int i = 0;
+	Init_Device();
+	CFG_Clock_UART1();
+	CFG_UART1();
+	Init_Commande_Serializer();
+
 while(1)
 {
-Action_UART1();
-Avancer(5);// pour le test
+	Avancer(15);// pour le test
+	Action_UART1();
+	for(i=0;i<1000000;i++);
+	Arret();
+	Action_UART1();
+	for(i=0;i<1000000;i++);
+	Rotation_Droite_90(15);
+	Action_UART1();
+	for(i=0;i<1000000;i++);
+	Reculer(10);
+	Action_UART1();
+	for(i=0;i<1000000;i++);
+	Arret();
+	Action_UART1();
+	for(i=0;i<1000000;i++);
 }
+
+
 }
