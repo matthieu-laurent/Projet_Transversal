@@ -150,7 +150,8 @@ void Demo_UART()
 	
 }
 
-void Analyse_String(char str[])
+// Renvoie 1 si message ok, 0 sinon
+int Analyse_String(char str[])
 {
 	char* xdata p = str;
 	int xdata vitesse = 0;
@@ -171,45 +172,45 @@ void Analyse_String(char str[])
 				{
 					case '1':
 						cmd_c.Etat_Epreuve = epreuve1;
-						sortie = true;
+						return 1;
 						break;
 					case '2':
 						cmd_c.Etat_Epreuve = epreuve2;
-						sortie = true;
+						return 1;
 						break;
 					case '3':
 						cmd_c.Etat_Epreuve = epreuve3;
-						sortie = true;
+						return 1;
 						break;
 					case '4':
 						cmd_c.Etat_Epreuve = epreuve4;
-						sortie = true;
+						return 1;
 						break;
 					case '5':
 						cmd_c.Etat_Epreuve = epreuve5;
-						sortie = true;
+						return 1;
 						break;
 					case '6':
 						cmd_c.Etat_Epreuve = epreuve6;
-						sortie = true;
+						return 1;
 						break;
 					case '8':
 						cmd_c.Etat_Epreuve = epreuve8;
-						sortie = true;
+						return 1;
 						break;
 					default:
 						cmd_c.Etat_Epreuve = epreuve1;
-						sortie = true;
+						return 1;
 						break;
 				} // fin switch
 				break; // fin case D
 			case 'E' :
 				cmd_c.Etat_Epreuve = Fin_Epreuve;
-				sortie = true;
+				return 1;
 				break;
 			case 'Q' :
 				cmd_c.Etat_Epreuve = Stop_Urgence;
-				sortie = true;
+				return 1;
 				break;
 			case 'T' :
 				p++;
@@ -221,26 +222,26 @@ void Analyse_String(char str[])
 					if(vitesse != 0)
 					{
 						cmd_c.Vitesse = vitesse;
-						sortie = true;
+						return 1;
 					}
 					else
 					{
 						cmd_c.Vitesse = 0;
-						sortie = true;
+						return 0;
 					}
 				}
 				else
 				{
-					sortie = true;
+					return 0;
 				}
 				break; // fin case T
 			case 'A':
 				if(*p != '\r') p++;
 				if(*p == '\r') // Pas de paramètre
 				{
-					sortie = true;
 					cmd_c.Etat_Mouvement = Avancer;
 					cmd_c.Vitesse = 20;
+					return 1;
 				}
 				else if(*p != 'S')
 				{
@@ -250,13 +251,13 @@ void Analyse_String(char str[])
 					{
 						cmd_c.Vitesse = vitesse;
 						cmd_c.Etat_Mouvement = Avancer;
-						sortie = true;
+						return 1;
 					}
 					else
 					{
 						cmd_c.Etat_Mouvement = Mouvement_non;
 						cmd_c.Vitesse = 0;
-						sortie = true;
+						return 0;
 					}
 				}
 				else if(*p == 'S')
@@ -270,7 +271,7 @@ void Analyse_String(char str[])
             {                 
 							cmd_c.ACQ_Duree = 0;
               cmd_c.Etat_ACQ_Son = ACQ_non;
-              sortie = true;
+              return 1;
             }
             if(*p != '\r')
             {
@@ -287,12 +288,12 @@ void Analyse_String(char str[])
               {
                 cmd_c.ACQ_Duree = atoi(tab);
                 cmd_c.Etat_ACQ_Son =ACQ_oui;
-                sortie = true;
+								return 1;
               }
 							else
 							{
 								cmd_c.Etat_ACQ_Son =ACQ_non;
-                sortie = true;
+								return 0;
 							}
             }
           }
@@ -305,7 +306,7 @@ void Analyse_String(char str[])
 				{
 					cmd_c.Vitesse = 20;
 					cmd_c.Etat_Mouvement = Reculer;
-					sortie = true;
+					return 1;
 				}
 				else
 				{
@@ -315,13 +316,13 @@ void Analyse_String(char str[])
 					{
 						cmd_c.Vitesse = vitesse;
 						cmd_c.Etat_Mouvement = Reculer;
-						sortie = true;
+						return 1;
 					}
 					else
 					{
 						cmd_c.Etat_Mouvement = Mouvement_non;
 						cmd_c.Vitesse = 0;
-						sortie = true;
+						return 0;
 					}
 				}
 				break; // fin case B
@@ -331,7 +332,7 @@ void Analyse_String(char str[])
 				if(*p == '\r')
 				{
 					cmd_c.Etat_Mouvement = Stopper;
-					sortie = true;
+					return 1;
 				}
 				break;
 			case 'R':
@@ -342,7 +343,7 @@ void Analyse_String(char str[])
 					if(*p == '\r')
 					{
 						cmd_c.Etat_Mouvement = Rot_90D;
-						sortie = true;
+						return 1;
 					}
 				}
 				else if(*p == 'G') // Rotation à gauche de 90°
@@ -351,7 +352,7 @@ void Analyse_String(char str[])
 					if(*p == '\r')
 					{
 						cmd_c.Etat_Mouvement = Rot_90G;
-						sortie = true;
+						return 1;
 					}
 				}
 				else if (*p == 'C') // Rotation complète de la base de 180°
@@ -360,7 +361,7 @@ void Analyse_String(char str[])
 					if(*p == '\r')
 					{
 						cmd_c.Etat_Mouvement = Rot_180D;
-						sortie = true;
+						return 1;
 					}
 					else
 					{
@@ -368,12 +369,12 @@ void Analyse_String(char str[])
 						if(*p == 'G')
 						{
 							cmd_c.Etat_Mouvement = Rot_180G;
-							sortie = true;
+							return 1;
 						}
 						else
 						{
 							cmd_c.Etat_Mouvement = Rot_180D;
-							sortie = true;
+							return 1;
 						}
 					}
 				}
@@ -394,12 +395,12 @@ void Analyse_String(char str[])
 								{
 									cmd_c.Angle = angle;
 									cmd_c.Etat_Mouvement = Rot_AngD;
-									sortie = true;
+									return 1;
 								}
 								else
 								{
 									cmd_c.Etat_Mouvement = Rot_90D;
-									sortie = true;
+									return 1;
 								}
 							}
 						}
@@ -414,31 +415,31 @@ void Analyse_String(char str[])
 								{
 									cmd_c.Angle = angle;
 									cmd_c.Etat_Mouvement = RotAngG;
-									sortie = true;
+									return 1;
 								}
 								else
 								{
 									cmd_c.Etat_Mouvement = Rot_90D;
-									sortie = true;
+									return 1;
 								}
 							}
 							else
 							{
 								cmd_c.Etat_Mouvement = Rot_90D;
-								sortie = true;
+								return 1;
 							}
 						}
 						else
 						{
 							cmd_c.Etat_Mouvement = Mouvement_non;
-							sortie = true;
+							return 1;
 						}
 						
 					}
 					else if (*p == '\r') // Pas de paramètres donc cas par défaut
 					{
 						cmd_c.Etat_Mouvement = Rot_90D;
-						sortie = true;
+						return 1;
 					}
 				}
 				break; // fin case R
@@ -455,14 +456,14 @@ void Analyse_String(char str[])
 						{
 							p++;
 							p = calculCoord(p,'X');
-							sortie = true;
+							return 1;
 						}
 						p++;
 					}
 					else
 					{
 						cmd_c.Etat_Mouvement = Mouvement_non;
-						sortie = true;
+						return 0;
 					}
 					if(*p == 'Y')
 					{
@@ -471,14 +472,14 @@ void Analyse_String(char str[])
 						{
 							p++;
 							p = calculCoord(p,'Y');
-							sortie = true;
+							return 1;
 						}
 						p++;
 					}
 					else
 					{
 						cmd_c.Etat_Mouvement = Mouvement_non;
-						sortie = true;
+						return 0;
 					}
 					if(*p == 'A')
 					{
@@ -488,19 +489,19 @@ void Analyse_String(char str[])
 							p++;
 							cmd_c.Angle = calculAngle(p);
 							cmd_c.Etat_Mouvement = Mouvement_non;
-							sortie = true;
+							return 1;
 						}
 					}
 					else
 					{
 						cmd_c.Etat_Mouvement = Mouvement_non;
-						sortie = true;
+						return 0;
 					}
 				}
 				else
 					{
 						cmd_c.Etat_Mouvement = Mouvement_non;
-						sortie = true;
+						return 0;
 					}
 				break; // fin case G
 					
@@ -581,8 +582,12 @@ void Analyse_String(char str[])
                   }
                   if(cmp == 2)
                   {
-										sortie = true;
+										return 1;
                   }
+									else
+									{
+										return 0;
+									}
                 }        
 							}  
 						}
@@ -610,7 +615,7 @@ void Analyse_String(char str[])
 							p++; // : 
 							p++; // Nombre
 							calculNombre(p);
-							sortie = true;
+							return 1;
 						}
 					}
 					else if(*p == '\r')
@@ -620,7 +625,7 @@ void Analyse_String(char str[])
 						cmd_c.Lumiere_Duree = 99;
 						cmd_c.Lumiere_Extinction = 0;
 						cmd_c.Lumiere_Nbre = 1;
-						sortie = true;
+						return 1;
 					}
 					else if(*p == 'S')
 					{
@@ -628,12 +633,12 @@ void Analyse_String(char str[])
 						if(*p == '\r')
 						{
 							cmd_c.Etat_Lumiere = Eteindre;
-							sortie = true;
+							return 1;
 						}
 					}
 					else
 					{
-						sortie = true;
+						return 0;
 					}
 					break;
 				case 'C':
@@ -669,13 +674,18 @@ void Analyse_String(char str[])
 							}
 						}								
 					}
-					sortie = true;
+					return 1;
 					break;
-					default:
-						sortie = true;
-						break;
+					
+				default:
+					return 0;
+					break;
+				
+				
 			} // fin switch
+		return 0;
 	} // while
+		return 0;
 } // fin fonction
 
 int calculVitesse(char* p)
