@@ -693,7 +693,7 @@ int calculVitesse(char* p)
 	}
 	vitesse[i]='\0';
 					
-	if(vitesse >= 10 && atoi(vitesse) <= 100)
+	if(atoi(vitesse) >= 10 && atoi(vitesse) <= 100)
 		return atoi(vitesse);
 	else
 		return 0;
