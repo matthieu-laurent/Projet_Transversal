@@ -20,7 +20,7 @@ char Getchar();
 
 void Demo_UART();
 
-void Analyse_String(char* str);
+int Analyse_String(char* str);
 
 int calculVitesse(char* p);
 
