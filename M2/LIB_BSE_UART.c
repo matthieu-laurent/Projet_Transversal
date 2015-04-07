@@ -102,39 +102,43 @@ void Rotation_angle(int angle,int vitesse)
 //*****************************************************************************************************************************************
 // Fonction de l'UART1
 //*****************************************************************************************************************************************
-
+/*
 void CFG_Clock_UART1(void)
 {
-	CKCON|=0x10; // timer1 clock select
-	TMOD|=0x20; // l'horloge du timer 1 est sysclock
-	TMOD&=0x2F; // le timer 1 est configuré en timer 8 bits avec autoreload
-  TCON      = 0x40;
-  TH1       = 0xB8;
-	TL1= 0x00;
-	ET1=0; // désactive les interruptions du timer 1
-	TR1=1;//Demarrer le Timer1	
-	TF1=0;//flag du Timer1 remis à 0
-	
-// On démarre le timer 1 à FFh ainsi un coup de clock après avoir démarrer, 
-// le timer se précharge avec la valeur de TH1
-	
+	CKCON|=0x40; // timer4 clock select
+  T4CON      = 0x34;//Timer 4 enabled
+  TH4       = 0xB8;
+	TL4= 0x00;
+	 EIE2=0x44;
+    RCAP4L    = 0xDC;
+    RCAP4H    = 0xFF;
 }
 
 void CFG_UART1(void)
 {
 	P0MDOUT   = 0x21;
   XBR2      = 0x44;//UART1 transmet en P00 reçoit en P01
-	RCLK0=0; // horloges de réception de l'UART0 = Timer 1
-	TCLK0=0; // horloges de transmission de l'UART0 = Timer 1
-	//PCON |=0x80; // SMOD0=1 : UART0 baud rate devided by two disabled
-	//PCON &= 0xBF; // SSTAT0=0
-	PCON = 0x10;
+	PCON = 0x10;//: UART1 Baud Rate Doubler Enable.
 	SCON1 =0x50; // Mode1 : 8-Bit UART, Variable Baud Rate,
-		     //RI0 will only be activated if stop bit is logic level 1,
-		    //UART0 reception enabled
-	SCON1|=0x02;//TI1=1;
-	EIE2|=0x40;
+	SCON1|=0x02;
+}*/
+// Stan
+void CFG_UART1(void)
+{
+    PCON |=0x10; // UART1 baud rate devided by two disabled
+    SCON1 =0x50; // Mode1 : 8-Bit UART, Variable Baud Rate,
+             //RI1 will only be activated if stop bit is logic level 1,
+            //UART1 reception enabled   
+    EIE2|=0x40;
 	EA=1;
+}
+void CFG_Clock_UART1(void)
+{ // UART1 utilise Timer4
+	T4CON      = 0x34;//Timer 4 enabled
+    CKCON|=0x40;
+  RCAP4L    = 0xDC;
+  RCAP4H    = 0xFF;
+    T4CON     = 0x34;
 }
 
 bit FLAG_ECRITURE=1;
@@ -235,6 +239,17 @@ void Action_UART1()
 		S_INPUTS.Etat_Commande=Commande_non;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
