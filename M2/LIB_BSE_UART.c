@@ -125,6 +125,8 @@ void CFG_UART1(void)
 // Stan
 void CFG_UART1(void)
 {
+		P0MDOUT   = 0x21;
+  XBR2      = 0x44;//UART1 transmet en P00 reçoit en P01
     PCON |=0x10; // UART1 baud rate devided by two disabled
     SCON1 =0x50; // Mode1 : 8-Bit UART, Variable Baud Rate,
              //RI1 will only be activated if stop bit is logic level 1,
