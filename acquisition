@@ -1,0 +1,64 @@
+#include "LIB_BSE_Config_Global.h"
+#include <intrins.h>
+#include <stdio.h>
+#include <string.h>
+
+
+
+#define FREQ_ECH 8192
+int duree;
+
+void ACQ_Son(unsigned char Temps)
+{
+    duree=atoi(Temps);
+    cmd_c.Etat_ACQ_Son=ACQ_oui;
+   
+    if(duree==0) cmd_c.Etat_ACQ_Son=ACQ_non;
+   
+}
+
+void ISR_Timer1(void)
+{
+    duree--;
+}
+
+void Config_Timer1(void)
+{
+    /*--------------------------------------
+Set Timer1 for 8-bit timer with reload
+(mode 2). The timer counts to 255,
+overflows, is reloaded with 156, and
+generates an interrupt.
+
+Set the Timer1 Run control bit.
+--------------------------------------*/
+TMOD = (TMOD & 0x0F) | 0x20;  /* Set Mode (8-bit timer with reload) */
+TH1 = 256 - 100;              /* Reload TL1 to count 100 clocks */
+TL1 = TH1;
+ET1 = 1;                      /* Enable Timer 1 Interrupts */
+TR1 = 1;                      /* Start Timer 1 Running */
+EA = 1;                       /* Global Interrupt Enable */
+
+/*--------------------------------------
+Do Nothing.  Actually, the timer 1
+interrupt will occur every 100 clocks.
+Since the oscillator runs at 12 MHz,
+the interrupt will happen every 10 KHz.
+--------------------------------------*/
+}
+
+void main() //
+{
+    unsigned int distance=0;
+    trig=0;
+    Init_Device();
+  
+    Config_Timer1();
+  
+  
+    while(1)
+    {
+                ACQ_Son();
+
+    }
+}
