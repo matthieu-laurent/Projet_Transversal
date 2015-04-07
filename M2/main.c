@@ -29,19 +29,19 @@ while(1)
 {
 	Avancer(15);// pour le test
 	Action_UART1();
-	for(i=0;i<1000000;i++);
+	for(i=0;i<5000;i++);
 	Arret();
 	Action_UART1();
-	for(i=0;i<1000000;i++);
+	for(i=0;i<5000;i++);/*
 	Rotation_Droite_90(15);
 	Action_UART1();
-	for(i=0;i<1000000;i++);
+	for(i=0;i<500000;i++);
 	Reculer(10);
 	Action_UART1();
-	for(i=0;i<1000000;i++);
+	for(i=0;i<500000;i++);
 	Arret();
 	Action_UART1();
-	for(i=0;i<1000000;i++);
+	for(i=0;i<500000;i++);*/
 }
 
 
