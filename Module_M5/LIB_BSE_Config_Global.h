@@ -4,7 +4,7 @@
 #endif
 
 
-#define BAUDRATE 9600
+#define BAUDRATE 19200
 #define SYSCLK 22118400    // SYSCLK frequency in Hz
 
 // Déclarations des fonctions
@@ -15,6 +15,12 @@ void gestion_memoires(void);
 void gestion_puissance(void);
 void gestion_interruption(void);
 void gestion_brocheIO(void);
+void CFG_UART0(void);
+void CFG_UART1(void);
+void CFG_Clock_UART0(void);
+void CFG_Clock_UART1(void);
+void CFG_Clock_UART4(void);
+
 void Init_Device(void);
 
 //------------------------------------------------------------------------------------
@@ -60,7 +66,7 @@ sbit P3__5 = P3^5;
 sbit P3__6 = P3^6;
 sbit P3__7 = P3^7;
 
-// Eléments de l'application Pilotage d'un système de tri
+// Eléments de l'application Robot
 sbit ECHO_ultrason = P3^5;
 sbit trig_ultrason = P3^4;
 sbit PWM1 = P1^2;
