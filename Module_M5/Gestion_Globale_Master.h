@@ -6,6 +6,7 @@
 #include "Ring_buffer.h"
 #include <intrins.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "Controle_Moteur.h"
 #include "Module_M1.h"
 #include "servo.h"
@@ -22,6 +23,8 @@ void Gestion_Mouvement(void);
 void Gestion_DCT_Obst(void);
 void Gestion_Servo(void);
 void Gestion_Lumiere(void);
+void Reinit_cmd(void);
 
 unsigned int MES_Dist_AV(void);
+unsigned int MES_Dist_AR(void);
 void delai_us(unsigned long int duree);
