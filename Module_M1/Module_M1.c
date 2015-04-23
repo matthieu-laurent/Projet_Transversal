@@ -8,7 +8,7 @@
 #include <string.h>
 
 extern OUT_M1 xdata cmd_c; // cmd_c : commande centrale
-
+char xdata *msg_info;
 // Renvoie 1 si message ok, 0 sinon
 
 int Analyse_String(char str[])
@@ -96,10 +96,15 @@ int Analyse_String(char str[])
 				break; // fin case T
 			case 'A':
 				if(*p != '\r') p++;
-				if(*p == '\r' && cmd_c.Vitesse <10) // Pas de paramètre
+				if(*p == '\r') // Pas de paramètre
 				{
+					if(cmd_c.Vitesse <10)
+					{
+						cmd_c.Etat_Mouvement = Avancer;
+						cmd_c.Vitesse = 20;
+						return 1;
+					}
 					cmd_c.Etat_Mouvement = Avancer;
-					cmd_c.Vitesse = 20;
 					return 1;
 				}
 				else if(*p != 'S')
@@ -163,7 +168,12 @@ int Analyse_String(char str[])
 				if(*p != '\r') p++;
 				if(*p == '\r') // Pas de paramètre
 				{
-					cmd_c.Vitesse = 20;
+					if(cmd_c.Vitesse <10)
+					{
+						cmd_c.Etat_Mouvement = Reculer;
+						cmd_c.Vitesse = 20;
+						return 1;
+					}
 					cmd_c.Etat_Mouvement = Reculer;
 					return 1;
 				}
@@ -230,11 +240,11 @@ int Analyse_String(char str[])
 							cmd_c.Etat_Mouvement = Rot_180G;
 							return 1;
 						}
-						else
-						{
-							cmd_c.Etat_Mouvement = Rot_180D;
-							return 1;
-						}
+						else if(*p == 'D')
+							{
+								cmd_c.Etat_Mouvement = Rot_180D;
+								return 1;
+							}	
 					}
 				}
 				else if (*p == 'A')
@@ -273,7 +283,7 @@ int Analyse_String(char str[])
 								if(angle > 0 && angle <= 180)
 								{
 									cmd_c.Angle = angle;
-									cmd_c.Etat_Mouvement = RotAngG;
+									cmd_c.Etat_Mouvement = Rot_AngG;
 									return 1;
 								}
 								else
@@ -303,7 +313,7 @@ int Analyse_String(char str[])
 				}
 				break; // fin case R
 				
-			case 'G':
+			case 'G':			// A REFAIRE
 				p++;
 				if(*p == ' ')
 				{
@@ -315,7 +325,6 @@ int Analyse_String(char str[])
 						{
 							p++;
 							p = calculCoord(p,'X');
-							return 1;
 						}
 						p++;
 					}
@@ -331,7 +340,6 @@ int Analyse_String(char str[])
 						{
 							p++;
 							p = calculCoord(p,'Y');
-							return 1;
 						}
 						p++;
 					}
@@ -347,7 +355,7 @@ int Analyse_String(char str[])
 						{
 							p++;
 							cmd_c.Angle = calculAngle(p);
-							cmd_c.Etat_Mouvement = Mouvement_non;
+							cmd_c.Etat_Mouvement = Depl_Coord;
 							return 1;
 						}
 					}
@@ -393,8 +401,14 @@ int Analyse_String(char str[])
 									p++;
 									// Traitement angle
 									cmd_c.DCT_Obst_Resolution = calculAngleDCTObst(p);
-									if(cmd_c.DCT_Obst_Resolution == 0) cmd_c.Etat_DCT_Obst = DCT_non;
-									return 0;
+									if(cmd_c.DCT_Obst_Resolution == 0)
+									{	
+										cmd_c.Etat_DCT_Obst = DCT_non;
+										return 0;
+									}
+									else{
+										return 1;
+									}
 								}
 								else
 								{
@@ -757,29 +771,67 @@ void calculNombre(char* p)
 	}
 }
 
-char* Invite_Commandes() //message signalant que le robot est pret
+char* Invite_Commandes(int epreuve) //message signalant que le robot est pret
 {
-      return "I le robot est pret\r";
+	char xdata txt[40] = "txt";
+	char *chaine;
+	
+	sprintf(txt,"I- Epreuve %d - Le Robot est pret",epreuve);
+	
+	// return txt : ne fonctionne pas ici, p-ê un probleme de mémoire. Utilisation de malloc pour corriger.
+	
+	chaine = malloc(strlen(txt)* sizeof(char));		// A faire pour eviter un probleme de mémoire
+	strcpy(chaine,txt);
+	
+	return chaine;
+
 }
 
 char* Arrivee_point()//message signalant que le robot est arrivée au pointspécifie
 {
-      return "Arrivee au point specifie\r";
+	return "Arrivee au point specifie"; 
 }
 
 char* Servomoteur_positionne(char* b)//message signalant que le servomoteur a atteint sa position de consigne
 {
-   return strcat("AS ",b);
+	 char *chaine = malloc(5*sizeof(char));
+	 strcpy(chaine,"AS ");
+	 strcat(chaine,b);
+   return chaine;
 }
-
-char* Detection_obstacle(BYTE *angle,unsigned int *distance)
+char* Detection_obstacle(BYTE *angle,unsigned int *distance, unsigned char pas)
+{
+	char i=0;
+	char *txt = malloc(10*sizeof(char));
+	char Angle;
+	
+	msg_info = malloc((pas*8 +4)* sizeof(char));
+	if(msg_info == 0 || txt == 0)
+	{
+		return "malloc echec msg info";
+	}
+	else
+	{
+	strcpy(msg_info,"KOB ");
+	for(i=0;i<pas;i++){
+		if(angle[i]>=128) Angle=angle[i] - 256;
+		else Angle = angle[i];
+		
+		sprintf(txt,"%d:%d ",(int)Angle,distance[i]);
+		strcat(msg_info,txt);
+  }
+	strcat(msg_info, " \r");
+	return msg_info;
+	}
+}
+/*char* Detection_obstacle(BYTE *angle,unsigned int *distance, unsigned char pas)
 {
 	char i=0;
   char xdata chaine[100] = "KOB " ;
 	char txt[10];
 	char Angle;
 	
-	for(i=0;i<6;i++){
+	for(i=0;i<pas;i++){
 		if(angle[i]>=128) Angle=angle[i] - 256;
 		else Angle = angle[i];
 		
@@ -788,14 +840,52 @@ char* Detection_obstacle(BYTE *angle,unsigned int *distance)
   }
 	strcat(chaine, " \r");
 	return chaine;
-}
-char* Detection_obstacle_360(BYTE *angle, unsigned int *distanceAV, unsigned int *distanceAR)
+}*/
+char* Detection_obstacle_360(BYTE *angle, unsigned int *distanceAV, unsigned int *distanceAR, unsigned char pas)
 {
 	/* Affiche les mesures des capteurs Avant et Arrière (AV et AR)
 		Les angles affichés sont compris entre -180° et +180. 
 		AV balaye de -90° à 90° en passant par 0°
 		AR balaye de 90° à -90 en passant par 180°
 	*/
+	char i=0;
+	char txt[10];
+	char Angle;
+	
+	msg_info = malloc((pas*8*2 +4)* sizeof(char));
+	strcpy(msg_info,"KOB ");
+	
+	for(i=0;i<pas*2;i++){
+		if(i<pas){
+			if(angle[i]>=128) Angle=angle[i] - 256;
+			else Angle = angle[i];
+			
+			sprintf(txt,"%d:%d ",(int)Angle,distanceAV[i]);
+		}
+		else{	
+																						// **** !!!!!!! CONVERSION A REVOIR !!!!!!!!! ***
+			if(angle[i-pas]>=128) Angle=angle[i-pas] - 256;
+		else Angle = angle[i-pas];
+			/*if(Angle >= -90 && Angle<= 0)	// Calcule de l'angle du capteur AR
+					Angle += 180;
+			else
+					Angle -=180;*/
+			
+			sprintf(txt,"%d: %d ",(int)Angle,distanceAR[i-pas]);
+		}
+		strcat(msg_info,txt);
+	}
+	strcat(msg_info, " \r");
+	return msg_info;
+}
+
+/*char* Detection_obstacle_360(BYTE *angle, unsigned int *distanceAV, unsigned int *distanceAR)
+{
+	/* Affiche les mesures des capteurs Avant et Arrière (AV et AR)
+		Les angles affichés sont compris entre -180° et +180. 
+		AV balaye de -90° à 90° en passant par 0°
+		AR balaye de 90° à -90 en passant par 180°
+	*//*
 	char i=0;
   char xdata chaine[100] = "KOB " ;
 	char txt[10];
@@ -820,7 +910,7 @@ char* Detection_obstacle_360(BYTE *angle, unsigned int *distanceAV, unsigned int
 	}
 	strcat(chaine, " \r");
 	return chaine;
-}
+}*/
 
 char* Info_auxilliaire(char* a)//information Info_auxilliaire
 {
