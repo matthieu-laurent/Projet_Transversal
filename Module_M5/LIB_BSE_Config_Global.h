@@ -17,10 +17,11 @@ void gestion_interruption(void);
 void gestion_brocheIO(void);
 void CFG_UART0(void);
 void CFG_UART1(void);
+void CFG_Timer0(void);
 void CFG_Clock_UART0(void);
 void CFG_Clock_UART1(void);
 void CFG_Clock_UART4(void);
-
+void PCA_Init(void);
 void Init_Device(void);
 
 //------------------------------------------------------------------------------------
@@ -67,8 +68,11 @@ sbit P3__6 = P3^6;
 sbit P3__7 = P3^7;
 
 // Eléments de l'application Robot
-sbit ECHO_ultrason = P3^5;
 sbit trig_ultrason = P3^4;
+sbit ECHO_ultrason = P3^5;
+sbit trig_ultrason_AR = P3^6;
+sbit ECHO_ultrason_AR = P3^7;
+
 sbit PWM1 = P1^2;
 sbit PWM2 = P1^3;
 sbit PWM3 = P1^4;
