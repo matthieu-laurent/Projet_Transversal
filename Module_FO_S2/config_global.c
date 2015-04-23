@@ -44,10 +44,9 @@ void gestion_puissance(void)
 void gestion_brocheIO(void)
 {
 		// mappage du signal issue du module 4 du pca sur p1.6
-		P1MDOUT   = 0x40;
-    XBR0      = 0x2F;
-    XBR2      = 0x44;
-
+	P1MDOUT   = 0x40;
+	XBR0      = 0x2F;
+	XBR2      = 0x44; 
 
 	
 }
