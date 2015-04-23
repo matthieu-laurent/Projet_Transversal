@@ -24,18 +24,18 @@ Lum_OFF: Nombre de cycles d’allumage-Extinction (de 1 à 100)
 	extern unsigned char Lum_ON;
 	extern unsigned char Lum_OFF;
 	extern unsigned char Lum_Nbre;
-	extern unsigned char temps;
+	extern unsigned int cpt;
+	extern unsigned int nbOverflow;
 /******************************/
 
 void Lumiere (void) //unsigned char Intensite, unsigned char Lum_ON, unsigned char Lum_OFF, unsigned char Lum_Nbre) 
 {
-	temps=Lum_ON*12/SYSCLK;
 	Lum_Nbre*=2;
 	configTimer3();
-	while(Lum_Nbre)
+	while(Lum_Nbre>0)
 	{
 	}
-	
+	TMR3CN=0; // stop le timer 3
 }
 
 /*
@@ -43,5 +43,7 @@ Extinction inconditionnelle de la source lumineuse
 */
 void Lumiere_Stop (void)
 {
-	
+	TMR3CN=0;// stop le timer 3
+	PCA0CPL4  = 0xFF;//pourcentage%256; // Permet d'avoir un rapport cyclique de Intensité 0% 
+	PCA0CPH4  = 0xFF;//pourcentage/256; // Permet d'avoir un rapport cyclique de Intensité 0%*/
 }
