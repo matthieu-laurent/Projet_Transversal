@@ -16,6 +16,7 @@ int xdata longueur_cmd = 0;
 char var_test=0;
 char  xdata outbuf[MAX_BUFLEN];     // memory for ring buffer #1 (TXD) //buffer UART0
 char  xdata inbuf [MAX_BUFLEN];     // memory for ring buffer #2 (RXD)
+extern char xdata *msg_info;
 
 // buffer UART1
 char xdata buf_rx1[MAX_BUFLEN];
@@ -32,7 +33,7 @@ void main(){
 	unsigned char xdata cmd[30] = "";
 	int xdata check = 0;
 	char c = 'd';
-	bool I_epreuve[9] = {0,1,1,1,1,1,1,1,1};
+	char I_epreuve=0;
 	
 	Init_Device();
 
@@ -92,6 +93,8 @@ void main(){
 						if(cmd_c.Etat_Mouvement != Mouvement_non){
 							Gestion_Mouvement();
 							Action_UART1();
+							if(cmd_c.Etat_Mouvement == Depl_Coord)
+								serOutstring(Arrivee_point());					// A modif , déclencher quand Arreté , vraiment arrivé.
 							cmd_c.Etat_Mouvement = Mouvement_non;
 							//for(tempo_mot=0;tempo_mot<1000000;tempo_mot++){}
 						//	serOutstring("test\r\n");
@@ -115,15 +118,61 @@ void main(){
 						}
 						
 						// Message Information Epreuve1:
-						if(I_epreuve[epreuve1]){
-							serOutstring(Invite_Commandes());
-							I_epreuve[epreuve1] = 0;
+						if(I_epreuve != 1){
+							serOutstring(Invite_Commandes(1));
+							I_epreuve = 1;
 						}
 					break;
 					
 					case epreuve2:
+						if(cmd_c.Etat_Mouvement != Mouvement_non){
+							Gestion_Mouvement();
+							Action_UART1();
+							cmd_c.Etat_Mouvement = Mouvement_non;
+							//for(tempo_mot=0;tempo_mot<1000000;tempo_mot++){}
+						//	serOutstring("test\r\n");
+						}
+						if(cmd_c.Etat_DCT_Obst != DCT_non){
+							Gestion_DCT_Obst();
+							cmd_c.Etat_DCT_Obst = DCT_non; // lance une seule détection par commande reçue.
+						}
+						if(cmd_c.Etat_Servo != Servo_non){
+							Gestion_Servo();			// Lance servo et affiche message information
+							cmd_c.Etat_Servo = Servo_non;
+						}
+						if(cmd_c.Etat_Lumiere != Lumiere_non){
+							Gestion_Lumiere();
+							cmd_c.Etat_Lumiere = Lumiere_non;
+							// Action_Lumiere()
+						}
+						if(cmd_c.Etat_ACQ_Son != ACQ_non){
+							//Action_ACQ_Son()  car Etat_ACQ_Son = oui/non
+							cmd_c.Etat_ACQ_Son = ACQ_non;
+						}
+						if(I_epreuve != 2){
+							serOutstring(Invite_Commandes(2));
+							I_epreuve = 2;
+						}
 					break;
 					case epreuve3:
+						
+						if(I_epreuve != 3){
+							serOutstring(Invite_Commandes(3));
+							I_epreuve = 3;
+						}
+					break;
+					case Fin_Epreuve:	
+						/* Suite à la commande "E" - Etat dans lequel on ne fait rien à part attendre 
+							 la commande "D valeur" pour démarrer l'épreuve n°valeur
+						*/
+							if(I_epreuve != 9){
+								I_epreuve = 9;
+						}
+							else
+							{
+								serOutstring("Action impossible - Demarrez une epreuve");
+							}
+							Reinit_cmd(); // Permet de ne pas prendre en compte les commandes envoyées quand on est en Fin_Epreuve (après la commande "E")
 					break;
 					default:
 					break;
@@ -233,6 +282,27 @@ void Gestion_Mouvement(void){
 		case Stopper:
 				Arret();
 		break;	
+		case Rot_90D:
+				Rotation_Droite_90(cmd_c.Vitesse);
+		break;
+		case Rot_90G:
+				Rotation_Gauche_90(cmd_c.Vitesse);
+		break;
+		case Rot_180D:
+				Rotation_180(cmd_c.Vitesse,'D');
+		break;
+		case Rot_180G:
+				Rotation_180(cmd_c.Vitesse,'G');
+		break;
+		case Rot_AngD:
+				Rotation_angle(cmd_c.Angle,cmd_c.Vitesse,'D');
+		break;
+		case Rot_AngG:
+				Rotation_angle(cmd_c.Angle,cmd_c.Vitesse,'G');
+		break;
+		case Depl_Coord:
+				Aller_en(cmd_c.Coord_X,cmd_c.Coord_Y,cmd_c.Angle,cmd_c.Vitesse);
+		break;
 		default: break;
 	
 	}
@@ -241,69 +311,86 @@ void Gestion_Mouvement(void){
 
 void Gestion_DCT_Obst(void){
 	char i=0;
-	unsigned int mesures[6], mesuresAR[6];
-	BYTE angles[6];
+	unsigned char pas = 1 + (180/cmd_c.DCT_Obst_Resolution);
+	/*unsigned int mesures[pas], mesuresAR[pas];
+	BYTE angles[pas];*/
 	
-	cmd_c.Etat_Servo = Servo_H;	// Servomoteur pour piloter les capteurs ultrasonics
+	unsigned int *mesures = malloc(pas* sizeof(unsigned int));
+	unsigned int *mesuresAR = malloc(pas* sizeof(unsigned int));
+	BYTE *angles = malloc(pas* sizeof(BYTE));
+	
+	if(mesures == 0)
+		serOutstring("malloc mesures echec \r");
+	else
+	{
+	cmd_c.Etat_Servo = Servo_C;	// Servomoteur pour piloter les capteurs ultrasonics
 	
 	switch(cmd_c.Etat_DCT_Obst){
 		case oui_180: 
-			cmd_c.Servo_Angle = -75;	// angle de mesure = 30°, on place le servo à -75 pour couvrir -90 -> -60
-			for(i=0;i<6;i++){				// Effectue un balayage de 180°. Mesure la distance d'obstacle tous les 30° (6fois). 
-				//CDE_Servo();
-				delai_us(5000); // attend 0.5secondes
+			cmd_c.Servo_Angle = -90;	// angle de mesure = 30°, on place le servo à -75 pour couvrir -90 -> -60
+			for(i=0;i<pas;i++){				// Effectue un balayage de 180°. Mesure la distance d'obstacle tous les 30° (6fois). 
+				CDE_Servo();
+				delai_us(50000); // attend 0.5secondes
 				mesures[i] = MES_Dist_AV();		
 				//mesures[i] = i*10;		
+				//((unsigned int*)mesures)[i] = i*10;		
+				//mesures[i] = i*10;		
 				angles[i] = cmd_c.Servo_Angle;
-				cmd_c.Servo_Angle+=30;	// puis on augmente l'angle de 30° pour couvrir -60 -> -30 et ainsi de suite
+				cmd_c.Servo_Angle+=cmd_c.DCT_Obst_Resolution;	// puis on augmente l'angle de 30° pour couvrir -60 -> -30 et ainsi de suite
 			}
-			
-			serOutstring(Detection_obstacle(angles,mesures));	// Envoie message information
+			//Detection_obstacle(angles,mesures,pas);
+			//serOutstring_tst();
+			serOutstring(Detection_obstacle(angles,mesures,pas));	// Envoie message information
 			break;
 		
 		case oui_360:				// Idem mais avec les 2 capteurs ultrasonics
-			cmd_c.Servo_Angle = -75;
-			for(i=0;i<6;i++){
+			cmd_c.Servo_Angle = -90;
+			for(i=0;i<pas;i++){
 				CDE_Servo();
-				delai_us(5); // attend 0.5secondes
-			//	mesures[i] = MES_Dist_AV();		
-			// mesuresAR[i] = MES_Dist_AR();
-				mesures[i] = i*10;		
-				mesuresAR[i] = i*20;						
+				delai_us(50000); // attend 0.5secondes
+				mesures[i] = MES_Dist_AV();		
+				mesuresAR[i] = MES_Dist_AR();
+			//	mesures[i] = i*10;		
+			//	mesuresAR[i] = i*20;						
 				angles[i] = cmd_c.Servo_Angle;
 				
-				cmd_c.Servo_Angle+=30;
+				cmd_c.Servo_Angle+=cmd_c.DCT_Obst_Resolution;
 			}
 			
-			serOutstring(Detection_obstacle_360(angles,mesures,mesuresAR));	// Envoie message information
+			serOutstring(Detection_obstacle_360(angles,mesures,mesuresAR,pas));	// Envoie message information
 			break;
 		
 		default: break;
+		}
 	}
-	
+	free(mesures);
+	free(mesuresAR);
+	free(angles);
+	free(msg_info);
+
 	cmd_c.Etat_Servo = Servo_non;		// Afin de réinitialiser la variable
-	
+
 }
 
 void Gestion_Servo(void){
 
-		char txt[1] = 'H'; 
+		char *txt = 'H'; 
 	switch(cmd_c.Etat_Servo){
 		case Servo_H: 
 			CDE_Servo();
-			txt[0] = 'H';
+			*txt = 'H';
 			serOutstring(Servomoteur_positionne(txt));
 			break;
 		
 		case Servo_V:
 			CDE_Servo();
-			txt[0] = 'V';
+			*txt = 'V';
 			serOutstring(Servomoteur_positionne(txt));
 			break;
 		
 		case Servo_C:
 			CDE_Servo();
-			txt[0] = 'V';
+			*txt = 'C';
 			serOutstring(Servomoteur_positionne(txt));
 			break;
 		
@@ -322,6 +409,13 @@ void Gestion_Lumiere(void){
 	}
 }
 
+void Reinit_cmd(void){
+	cmd_c.Etat_Mouvement = Mouvement_non;
+	cmd_c.Etat_ACQ_Son = ACQ_non;
+	cmd_c.Etat_DCT_Obst = DCT_non;
+	cmd_c.Etat_Servo = Servo_non;
+	cmd_c.Etat_Lumiere = Lumiere_non;
+}
 void delai_us(unsigned long int duree){
 	unsigned long int i=0;
 	int j=0;
