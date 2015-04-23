@@ -1,18 +1,26 @@
 #include <LIB_BSE_Config_Global.h>
 #include <LIB_BSE_GPIO.h>
+#include <LIB_BSE_GPIO.h>
+#include <stdlib.h>
+
+unsigned int xdata mempool_global[200];
+char xdata mempool_msginfo[3000];
 
 void Init_Device(void)
 {
-
+	init_mempool(&mempool_global,sizeof(mempool_global));
+	init_mempool(&mempool_msginfo,sizeof(mempool_msginfo));
 	gestion_watchdog();
 	gestion_horloge();
 	
 	gestion_interruption();
 	gestion_brocheIO();
 	CFG_UART0();
+	CFG_Timer0();
 	CFG_Clock_UART0();
 	CFG_UART1();
 	CFG_Clock_UART1();
+	PCA_Init();
 	//	gestion_reset();
 	//gestion_memoires();
 	//gestion_puissance();
@@ -68,3 +76,10 @@ void CFG_Clock_UART1(void)
 	T4CON     = 0x34;
 }
 
+void CFG_Timer0(void){
+	// Init Timer 0
+	TMOD=0x01; // timer0 en mode 1 (16bit Counter/timer)
+	CKCON|=0x08; // system clock
+	// IT0 = 1; // ECHO_ultrason is edge trig_ultrasongered
+	ET0 = 1;	// Active Interruption Timer0
+}
