@@ -330,7 +330,7 @@ void Gestion_Mouvement(void){
 				Rotation_angle(cmd_c.Angle,cmd_c.Vitesse,'G');
 		break;
 		case Depl_Coord:
-				Aller_en(cmd_c.Coord_X,cmd_c.Coord_X,cmd_c.Angle,cmd_c.Vitesse);
+				Aller_en(cmd_c.Coord_X,cmd_c.Coord_Y,cmd_c.Angle,cmd_c.Vitesse);
 		break;
 		default: break;
 	
@@ -352,7 +352,7 @@ void Gestion_DCT_Obst(void){
 		serOutstring("malloc mesures echec \r");
 	else
 	{
-	cmd_c.Etat_Servo = Servo_H;	// Servomoteur pour piloter les capteurs ultrasonics
+	cmd_c.Etat_Servo = Servo_C;	// Servomoteur pour piloter les capteurs ultrasonics
 	
 	switch(cmd_c.Etat_DCT_Obst){
 		case oui_180: 
