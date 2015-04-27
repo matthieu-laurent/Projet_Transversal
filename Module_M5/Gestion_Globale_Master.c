@@ -1,6 +1,7 @@
 #include "Gestion_Globale_Master.h"
 
-
+jmp_buf env;
+int error_jmp=0;
 
 OUT_M1 xdata cmd_c; // cmd_c : commande centrale
 IN_M1 xdata info_c; // info : information
@@ -8,6 +9,8 @@ OUT_M2 xdata S_OUTPUTS;  // S_ : serializer
 IN_M2 xdata S_INPUTS; 
 
 unsigned int xdata distance_cible=0;
+bit ARRET_URGENCE = 0;
+bit erreur_U0_RX = 0;
 bit start = 0;
 bit envoyer_info=0;
 bit FLAG_ECRITURE = 1; 					// UART1
@@ -65,13 +68,20 @@ void main(){
  
 	cmd_c.Etat_Epreuve = epreuve1; // pour test
 	
+	error_jmp = setjmp(env);
+	
+	if(ARRET_URGENCE)
+	{
+		RETI_ISR();
+		Arret_Urgence_Fonction();
+	}
 	while(1){
 	
-		
 		if(start){
 			start = 0;
 			id_cmd = 0;
-		do{ 
+			strcpy(cmd,"");
+		do{ 		// Récupère la commande stockée dans le buffer
 					value = serInchar();
 					if(value != 0)
 					{
@@ -82,9 +92,7 @@ void main(){
 				
 		if(value == '\r')	// si une commande à été saisie
 		{		
-			//printf("cmd = %s",cmd);
-			// analyse cmd
-			//Analyse_String("A 20\r");
+			// Analyse la commande et affecte les variables de "cmd_c." correspondantes
 			check = Analyse_String(cmd);
 			if(check == 1)
 			{
@@ -93,8 +101,6 @@ void main(){
 						if(cmd_c.Etat_Mouvement != Mouvement_non){
 							Gestion_Mouvement();
 							Action_UART1();
-							if(cmd_c.Etat_Mouvement == Depl_Coord)
-								serOutstring(Arrivee_point());					// A modif , déclencher quand Arreté , vraiment arrivé.
 							cmd_c.Etat_Mouvement = Mouvement_non;
 							//for(tempo_mot=0;tempo_mot<1000000;tempo_mot++){}
 						//	serOutstring("test\r\n");
@@ -186,12 +192,16 @@ void main(){
 	}
 		else{
 			if(value == 0) //buffer vide : erreur ou ne fait rien
-			{
-			
+			{ 
+				serOutstring("Erreur Buffer Vide U0 RX\r\n#");
 			}			
 		}
+		}	// fin if(start)
+		if(erreur_U0_RX){
+			serOutstring("Erreur Buffer Plein U0 RX\r\n#");
+			erreur_U0_RX = 0;
 		}
-  }
+  }	// fin while(1)
 
 }
 
@@ -231,6 +241,13 @@ void UART0_ISR(void) interrupt 0x4 {
 				start = 1;
 				longueur_cmd = 0;
 			}
+			else if(car == 'Q')
+			{
+				ARRET_URGENCE = 1;
+				//EIP2 |= 0x40;
+				RI0 = 0;
+				longjmp(env,1);
+			}
 		}
 		else{	// Si buffer FULL
 			if(start == 0){ 	// Si on a pas de commande à traiter en cours
@@ -238,6 +255,7 @@ void UART0_ISR(void) interrupt 0x4 {
 					RB_POPADVANCE(&in);
 				}
 				longueur_cmd = 0;
+				erreur_U0_RX=1;
 			}			
 		}
    RI0 = 0;
@@ -271,6 +289,17 @@ void UART1_ISR(void) interrupt 20{
 	}
 }
 
+void Arret_Urgence_Fonction(void){
+				
+	Arret();
+	Action_UART1();
+		//	EIP2 &= 0xBF;
+	serOutstring("Arret d Urgence");
+	serOutstring(Accuse_Reception_OK());
+	Reinit_cmd();
+	ARRET_URGENCE = 0;
+}
+
 void Gestion_Mouvement(void){
 	switch(cmd_c.Etat_Mouvement){
 		case Avancer:
@@ -301,7 +330,7 @@ void Gestion_Mouvement(void){
 				Rotation_angle(cmd_c.Angle,cmd_c.Vitesse,'G');
 		break;
 		case Depl_Coord:
-				Aller_en(cmd_c.Coord_X,cmd_c.Coord_Y,cmd_c.Angle,cmd_c.Vitesse);
+				Aller_en(cmd_c.Coord_X,cmd_c.Coord_X,cmd_c.Angle,cmd_c.Vitesse);
 		break;
 		default: break;
 	
@@ -323,18 +352,18 @@ void Gestion_DCT_Obst(void){
 		serOutstring("malloc mesures echec \r");
 	else
 	{
-	cmd_c.Etat_Servo = Servo_C;	// Servomoteur pour piloter les capteurs ultrasonics
+	cmd_c.Etat_Servo = Servo_H;	// Servomoteur pour piloter les capteurs ultrasonics
 	
 	switch(cmd_c.Etat_DCT_Obst){
 		case oui_180: 
 			cmd_c.Servo_Angle = -90;	// angle de mesure = 30°, on place le servo à -75 pour couvrir -90 -> -60
 			for(i=0;i<pas;i++){				// Effectue un balayage de 180°. Mesure la distance d'obstacle tous les 30° (6fois). 
-				CDE_Servo();
-				delai_us(50000); // attend 0.5secondes
-				mesures[i] = MES_Dist_AV();		
+				CDE_Servo(); 
+				delai_us(5); // delai_us(50000); attend 0.5secondes
+				//mesures[i] = MES_Dist_AV();		
 				//mesures[i] = i*10;		
 				//((unsigned int*)mesures)[i] = i*10;		
-				//mesures[i] = i*10;		
+				mesures[i] = i*10;		
 				angles[i] = cmd_c.Servo_Angle;
 				cmd_c.Servo_Angle+=cmd_c.DCT_Obst_Resolution;	// puis on augmente l'angle de 30° pour couvrir -60 -> -30 et ainsi de suite
 			}
@@ -348,10 +377,10 @@ void Gestion_DCT_Obst(void){
 			for(i=0;i<pas;i++){
 				CDE_Servo();
 				delai_us(50000); // attend 0.5secondes
-				mesures[i] = MES_Dist_AV();		
-				mesuresAR[i] = MES_Dist_AR();
-			//	mesures[i] = i*10;		
-			//	mesuresAR[i] = i*20;						
+			//	mesures[i] = MES_Dist_AV();		
+			// mesuresAR[i] = MES_Dist_AR();
+				mesures[i] = i*10;		
+				mesuresAR[i] = i*20;						
 				angles[i] = cmd_c.Servo_Angle;
 				
 				cmd_c.Servo_Angle+=cmd_c.DCT_Obst_Resolution;
@@ -429,3 +458,4 @@ void delai_us(unsigned long int duree){
 		}
 	}
 }
+
