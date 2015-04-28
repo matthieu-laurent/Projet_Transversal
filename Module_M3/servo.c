@@ -77,7 +77,7 @@ unsigned long int CDE_Servo(){
 			else 
 				duree=0,15*(Angle_actuel-Angle_C)/60; */
 			
-			duree=duree/100; // duree en centième de seconde 
+			duree=duree*100; // duree en centième de seconde 
 			PCA0CPL0  = ((int)codeDec)%256;
 			PCA0CPH0  = (int)(codeDec/256);
 			
@@ -108,6 +108,7 @@ unsigned long int CDE_Servo(){
 			else 
 				duree=0,22*(Angle_actuel_V-Angle)/60;
 			
+			duree=duree*100;
 			PCA0CPL2  = ((int)codeDec)%256;
 			PCA0CPH2  = (int)(codeDec/256);
 			
