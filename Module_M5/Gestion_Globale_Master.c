@@ -404,22 +404,26 @@ void Gestion_DCT_Obst(void){
 void Gestion_Servo(void){
 
 		char *txt = 'H'; 
+		unsigned long int duree=0;
 	switch(cmd_c.Etat_Servo){
 		case Servo_H: 
 			CDE_Servo();
 			*txt = 'H';
+			delai_us(duree*2000);
 			serOutstring(Servomoteur_positionne(txt));
 			break;
 		
 		case Servo_V:
 			CDE_Servo();
 			*txt = 'V';
+			delai_us(duree*2000);
 			serOutstring(Servomoteur_positionne(txt));
 			break;
 		
 		case Servo_C:
-			CDE_Servo();
+			duree=CDE_Servo();
 			*txt = 'C';
+			delai_us(duree*2000);
 			serOutstring(Servomoteur_positionne(txt));
 			break;
 		
