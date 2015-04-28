@@ -23,8 +23,8 @@ les registres suivants: PCA0CPL2 et PCA0CPH2
 	 2400us <=> (EEB8)h <=> (61112)d
 5) A l'aide de excel, nous avons determiné la fonction suivante: codeDec= 17,656*Angle + 62706
 6) vitesse de rotation:
-Operating Speed (4.8V): 0.19sec/60° at no load
-Operating Speed (6.0V): 0.15sec/60° at no load
+Operating Speed (4.8V): 0.22sec/60° at no load
+Operating Speed (6.0V): 0.18sec/60° at no load
 
 7) commande angle (récupérée en hexa):	0<=> 0 ; 127 <=> 127 <=> 127 ; 128 <=> -128 ; 255 <=> -1
 
@@ -42,7 +42,7 @@ char Angle_actuel_C=0;
 
 unsigned long int CDE_Servo(){
 	unsigned char Angle1=cmd_c.Servo_Angle;
-	char Angle;
+	char Angle=0;
 	double codeDec;
 	double duree=0; // temps pour que le servomoteur passe de la position "Angle_actuel" à la position final "Angle"
 	
@@ -68,16 +68,16 @@ unsigned long int CDE_Servo(){
 			// Estimation durée
 			// cas 1 : Operating Speed (4.8V): 0.19sec/60° at no load
 			if(Angle>Angle_actuel_C)
-				duree=(double)(0,19*(Angle-Angle_actuel_C)/60); // unité duree: sec
+				duree=(double)(0,22*(Angle-Angle_actuel_C)/60); // unité duree: sec
 			else 
-				duree=(double)(0,19*(Angle_actuel_C-Angle)/60);
+				duree=(double)(0,22*(Angle_actuel_C-Angle)/60);
 			/*// cas 2 : Operating Speed (6.0V): 0.15sec/60° at no load
 			if(Angle>Angle_actuel_C)
 				duree=0,15*(Angle-Angle_actuel_C)/60; // unité duree: sec
 			else 
 				duree=0,15*(Angle_actuel-Angle_C)/60; */
 			
-			duree=duree*100; // duree en centième de seconde 
+			duree=duree/100; // duree en centième de seconde 
 			PCA0CPL0  = ((int)codeDec)%256;
 			PCA0CPH0  = (int)(codeDec/256);
 			
@@ -88,9 +88,9 @@ unsigned long int CDE_Servo(){
 		{
 		
 			if(Angle>Angle_actuel_H)
-				duree=0,19*(Angle-Angle_actuel_H)/60; // unité duree: sec
+				duree=0,22*(Angle-Angle_actuel_H)/60; // unité duree: sec
 			else 
-				duree=0,19*(Angle_actuel_H-Angle)/60;
+				duree=0,22*(Angle_actuel_H-Angle)/60;
 		
 			
 			duree=duree*100; // duree en centième de seconde 
@@ -104,9 +104,9 @@ unsigned long int CDE_Servo(){
 		if(cmd_c.Etat_Servo==Servo_V)
 		{
 			if(Angle>Angle_actuel_V)
-				duree=0,19*(Angle-Angle_actuel_V)/60; // unité duree: sec
+				duree=0,22*(Angle-Angle_actuel_V)/60; // unité duree: sec
 			else 
-				duree=0,19*(Angle_actuel_V-Angle)/60;
+				duree=0,22*(Angle_actuel_V-Angle)/60;
 			
 			PCA0CPL2  = ((int)codeDec)%256;
 			PCA0CPH2  = (int)(codeDec/256);
