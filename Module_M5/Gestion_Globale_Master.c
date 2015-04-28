@@ -21,6 +21,8 @@ char  xdata outbuf[MAX_BUFLEN];     // memory for ring buffer #1 (TXD) //buffer 
 char  xdata inbuf [MAX_BUFLEN];     // memory for ring buffer #2 (RXD)
 extern char xdata *msg_info;
 
+char tmp_arret_urgence=0;
+
 // buffer UART1
 char xdata buf_rx1[MAX_BUFLEN];
 char xdata rx1_rd = 0;
@@ -74,6 +76,7 @@ void main(){
 	{
 		RETI_ISR();
 		Arret_Urgence_Fonction();
+		I_epreuve=0;
 	}
 	while(1){
 	
@@ -216,7 +219,7 @@ void serInit(void) {
 
 void UART0_ISR(void) interrupt 0x4 {
 
-	char car,i=0; 
+	char car,i=0;	
 	
   if (TI0==1) // On peut envoyer une nouvelle donn?e sur la liaison s?rie
   { 
@@ -243,11 +246,21 @@ void UART0_ISR(void) interrupt 0x4 {
 			}
 			else if(car == 'Q')
 			{
+				tmp_arret_urgence++;	
+			}
+			if(car == '\r' && tmp_arret_urgence==1)
+			{
 				ARRET_URGENCE = 1;
 				//EIP2 |= 0x40;
 				RI0 = 0;
 				longjmp(env,1);
+				tmp_arret_urgence=0;
 			}
+			else if (car != '\r' && tmp_arret_urgence==1 && car!='Q')
+			{
+				tmp_arret_urgence=0;
+			}
+			
 		}
 		else{	// Si buffer FULL
 			if(start == 0){ 	// Si on a pas de commande à traiter en cours
@@ -283,7 +296,7 @@ void UART1_ISR(void) interrupt 20{
 	else{
 		if((SCON1&0x01) == 0x01){ // Sinon si RI1 = 1 : récéption
 			c = SBUF1;
-			serOutchar(c);	
+			//serOutchar(c);	
 			SCON1&=0xFE;	// RI1 = 0
 		}
 	}
@@ -340,6 +353,7 @@ void Gestion_Mouvement(void){
 
 void Gestion_DCT_Obst(void){
 	char i=0;
+	unsigned long int duree=0;
 	unsigned char pas = 1 + (180/cmd_c.DCT_Obst_Resolution);
 	/*unsigned int mesures[pas], mesuresAR[pas];
 	BYTE angles[pas];*/
@@ -358,12 +372,12 @@ void Gestion_DCT_Obst(void){
 		case oui_180: 
 			cmd_c.Servo_Angle = -90;	// angle de mesure = 30°, on place le servo à -75 pour couvrir -90 -> -60
 			for(i=0;i<pas;i++){				// Effectue un balayage de 180°. Mesure la distance d'obstacle tous les 30° (6fois). 
-				CDE_Servo(); 
-				delai_us(5); // delai_us(50000); attend 0.5secondes
-				//mesures[i] = MES_Dist_AV();		
+				duree=CDE_Servo(); 
+				delai_us(duree); // delai_us(50000/20); attend 0.5secondes
+				mesures[i] = MES_Dist_AV();		
 				//mesures[i] = i*10;		
 				//((unsigned int*)mesures)[i] = i*10;		
-				mesures[i] = i*10;		
+				//mesures[i] = i*10;		
 				angles[i] = cmd_c.Servo_Angle;
 				cmd_c.Servo_Angle+=cmd_c.DCT_Obst_Resolution;	// puis on augmente l'angle de 30° pour couvrir -60 -> -30 et ainsi de suite
 			}
@@ -375,12 +389,12 @@ void Gestion_DCT_Obst(void){
 		case oui_360:				// Idem mais avec les 2 capteurs ultrasonics
 			cmd_c.Servo_Angle = -90;
 			for(i=0;i<pas;i++){
-				CDE_Servo();
-				delai_us(50000); // attend 0.5secondes
-			//	mesures[i] = MES_Dist_AV();		
-			// mesuresAR[i] = MES_Dist_AR();
-				mesures[i] = i*10;		
-				mesuresAR[i] = i*20;						
+				duree=CDE_Servo(); 
+				delai_us(duree); // attend 0.5secondes
+				mesures[i] = MES_Dist_AV();		
+			 mesuresAR[i] = MES_Dist_AR();
+				//mesures[i] = i*10;		
+				//mesuresAR[i] = i*20;						
 				angles[i] = cmd_c.Servo_Angle;
 				
 				cmd_c.Servo_Angle+=cmd_c.DCT_Obst_Resolution;
@@ -409,21 +423,21 @@ void Gestion_Servo(void){
 		case Servo_H: 
 			CDE_Servo();
 			*txt = 'H';
-			delai_us(duree*2000);
+			delai_us(duree);
 			serOutstring(Servomoteur_positionne(txt));
 			break;
 		
 		case Servo_V:
 			CDE_Servo();
 			*txt = 'V';
-			delai_us(duree*2000);
+			delai_us(duree);
 			serOutstring(Servomoteur_positionne(txt));
 			break;
 		
 		case Servo_C:
 			duree=CDE_Servo();
 			*txt = 'C';
-			delai_us(duree*2000);
+			delai_us(duree);
 			serOutstring(Servomoteur_positionne(txt));
 			break;
 		
@@ -453,7 +467,7 @@ void delai_us(unsigned long int duree){
 	unsigned long int i=0;
 	int j=0;
 	//int coef = COEF_NS_US;
-	int coef = 1;
+	int coef = 20;
 	
 	for(j=0;j<coef;j++){
 		for(i=0;i<duree;i++)
