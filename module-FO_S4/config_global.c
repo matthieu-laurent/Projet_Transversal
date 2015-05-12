@@ -7,6 +7,7 @@ gestion_horloge();
 gestion_memoires();
 gestion_puissance();
 gestion_brocheIO();
+Interrupts_Init();
 }
 void gestion_reset(void)
 {
@@ -37,9 +38,17 @@ void gestion_puissance(void)
 void gestion_brocheIO(void)
 {
 		// mappage de tous les composants (wizard)
-    P0MDOUT   = 0x08;
-    XBR0      = 0xEF;
-    XBR1      = 0x01;
+	  P0MDOUT   = 0x08;
+    P1MDOUT   = 0x40;
+    XBR0      = 0x2F;
     XBR2      = 0x44;
+}
 
+void Interrupts_Init()
+{
+	
+	EIE2 |= 0x01; //Active interruption timer3 (Mise à 1 du bit 0 du registre EIE2: permet d'activer l'interruption du timer3.)
+
+	EIE1 = 0x01; //  activer interruption SPI
+	EA = 1;
 }
