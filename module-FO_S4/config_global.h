@@ -14,8 +14,8 @@ void	gestion_horloge();
 void	gestion_memoires();
 void	gestion_puissance();
 void	gestion_brocheIO();
+void Interrupts_Init();
 
-sbit LED = P1^6;
 //------------------------------------------------------------------------------------
 // Déclarations des GPIOs Projet BSE 2013
 //------------------------------------------------------------------------------------
