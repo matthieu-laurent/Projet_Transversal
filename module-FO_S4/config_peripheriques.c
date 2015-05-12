@@ -5,6 +5,10 @@
 #include "config_global.h"
 #endif
 
+
+#include <string.h>
+#include <stdio.h>
+
 /*************** variables globales *****************/
 extern unsigned char Intensite;
 extern unsigned char Lum_ON;
@@ -13,13 +17,23 @@ extern unsigned char Lum_Nbre;
 extern unsigned int cpt;
 extern unsigned int nbOverflow;
 extern unsigned char ON;
+
+
+
+extern bit transmit_completed;
+	
+extern char tableau[20];
+extern int index;
+
+extern int fin_spi;
+
+char serial_data;
 /**************************************************/
 
 
 /*********************** Timer 3 *************************************************************/
 void configTimer3(void)
-{
-	EIE2 |= 0x01; //Active interruption timer3 (Mise à 1 du bit 0 du registre EIE2: permet d'activer l'interruption du timer3.)
+{	
 	TMR3L = 0x00;
 	TMR3H = 0x00;//Initialisation du timer3 à FFFF (Mise à 1 de l'enssemble des 8 bits des registres TMR3L et TMR3H.)
 	TMR3RLL = 0xFF;// permet de générer une interruption toutes les 25ms
@@ -97,3 +111,42 @@ PCA0CPH4 = 0xFF;//pourcentage/256; // Permet d'avoir un rapport cyclique de Inte
 }
 
 /**********************************************************************************************/
+
+/*************************** SPI **************************************************************/
+
+// Envoit des chaines de la forme "DD" + 0x00 + 0x00 + "FF"
+
+
+void SPI_Init()
+{
+SPI0CFG = 0x80;
+SPI0CN = 0x05;
+SPI0CKR = 0x04;
+}
+
+
+/**
+* FUNCTION_PURPOSE:interrupt
+* FUNCTION_INPUTS: void
+* FUNCTION_OUTPUTS: transmit_complete is software transfert flag
+*/
+void it_SPI(void) interrupt 6
+{
+	while(TXBSY); /* read and clear spi status register */
+	serial_data=SPI0DAT; /* read receive data */
+	if(index < 11)
+	{
+		tableau[index] = serial_data; // Stockage
+		if(tableau[index]=='F' && tableau[index-1]=='F')
+		{
+			fin_spi=1;
+		}
+		index++;
+	}
+	
+	transmit_completed=1;/* set software flag */
+	//SPI0DAT = serial_data; // echo data to master
+	SPIF = 0;
+}
+
+/***********************************************************************************************/
